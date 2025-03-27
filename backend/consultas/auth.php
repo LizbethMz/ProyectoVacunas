@@ -25,7 +25,7 @@ try {
             throw new Exception('Datos JSON inválidos: ' . json_last_error_msg());
         }
         
-        if (empty($data->username) {
+        if (empty($data->username)) {
             throw new Exception('El nombre de usuario es requerido');
         }
         
