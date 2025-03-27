@@ -1,0 +1,696 @@
+{
+    "response": {
+      "metadata": {
+        "apiVersion": "1.0",
+        "timestamp": "2025-03-25T16:45:00Z",
+        "status": "success",
+        "dataVersion": "1.2"
+      },
+      "pagination": {
+        "totalRecords": 20,
+        "currentPage": 1,
+        "totalPages": 1,
+        "recordsPerPage": 50
+      },
+      "data": {
+        "nivel1": {
+          "description": "Entidades maestras fundamentales",
+          "farmaceuticas": [
+            {
+              "codigo": 1,
+              "nombre": "Pfizer",
+              "telefono": "+1 212-733-2323",
+              "correo": "contacto@pfizer.com",
+              "sucursalesCount": 3,
+              "laboratoriosAsociados": [1, 2]
+            },
+            {
+              "codigo": 2,
+              "nombre": "Moderna",
+              "telefono": "+1 617-714-6500",
+              "correo": "info@moderna.com",
+              "sucursalesCount": 2,
+              "laboratoriosAsociados": [3]
+            },
+            {
+              "codigo": 3,
+              "nombre": "AstraZeneca",
+              "telefono": "+44 20 3749 5000",
+              "correo": "contact@astrazeneca.com",
+              "sucursalesCount": 2,
+              "laboratoriosAsociados": [4]
+            },
+            {
+              "codigo": 4,
+              "nombre": "Johnson & Johnson",
+              "telefono": "+1 732-524-0400",
+              "correo": "media@jnj.com",
+              "sucursalesCount": 2,
+              "laboratoriosAsociados": [5]
+            },
+            {
+              "codigo": 5,
+              "nombre": "Novavax",
+              "telefono": "+1 240-268-2000",
+              "correo": "info@novavax.com",
+              "sucursalesCount": 1,
+              "laboratoriosAsociados": [2]
+            }
+          ],
+          "laboratorios": [
+            {
+              "codigo": 1,
+              "nombre": "LabCorp",
+              "contacto": "Dr. Smith",
+              "plantasCount": 2,
+              "farmaceuticasAsociadas": [1]
+            },
+            {
+              "codigo": 2,
+              "nombre": "Pfizer Manufacturing",
+              "contacto": "Dra. Johnson",
+              "plantasCount": 3,
+              "farmaceuticasAsociadas": [1, 5]
+            },
+            {
+              "codigo": 3,
+              "nombre": "Moderna Labs",
+              "contacto": "Dr. Williams",
+              "plantasCount": 2,
+              "farmaceuticasAsociadas": [2]
+            },
+            {
+              "codigo": 4,
+              "nombre": "AstraZeneca Biologics",
+              "contacto": "Dra. Brown",
+              "plantasCount": 2,
+              "farmaceuticasAsociadas": [3]
+            },
+            {
+              "codigo": 5,
+              "nombre": "Janssen Pharmaceuticals",
+              "contacto": "Dr. Davis",
+              "plantasCount": 2,
+              "farmaceuticasAsociadas": [4]
+            }
+          ],
+          "ciudades": [
+            {
+              "codigo": 1,
+              "nombre": "Nueva York",
+              "sucursalesCount": 2,
+              "plantasCount": 2
+            },
+            {
+              "codigo": 2,
+              "nombre": "Boston",
+              "sucursalesCount": 2,
+              "plantasCount": 1
+            },
+            {
+              "codigo": 3,
+              "nombre": "Londres",
+              "sucursalesCount": 1,
+              "plantasCount": 1
+            },
+            {
+              "codigo": 4,
+              "nombre": "Barcelona",
+              "sucursalesCount": 1,
+              "plantasCount": 1
+            },
+            {
+              "codigo": 5,
+              "nombre": "Berlín",
+              "sucursalesCount": 1,
+              "plantasCount": 1
+            }
+          ],
+          "marcas": [
+            {
+              "codigo": 1,
+              "nombre": "Mercedes-Benz",
+              "modelosCount": 2
+            },
+            {
+              "codigo": 2,
+              "nombre": "Volvo",
+              "modelosCount": 2
+            },
+            {
+              "codigo": 3,
+              "nombre": "MAN",
+              "modelosCount": 1
+            },
+            {
+              "codigo": 4,
+              "nombre": "Scania",
+              "modelosCount": 1
+            },
+            {
+              "codigo": 5,
+              "nombre": "Iveco",
+              "modelosCount": 1
+            }
+          ]
+        },
+        "nivel2": {
+          "description": "Entidades dependientes de nivel 1",
+          "sucursales": [
+            {
+              "codigo": 1,
+              "nombre": "Pfizer NY Central",
+              "ubicacion": "Nueva York, USA",
+              "farmaceuticaId": 1,
+              "ciudadId": 1,
+              "enviosCount": 2,
+              "detalle": {
+                "direccion": "235 42nd St, Manhattan",
+                "codigo_postal": "10017",
+                "telefono": "+1 212-733-1000"
+              }
+            },
+            {
+              "codigo": 2,
+              "nombre": "Pfizer Boston",
+              "ubicacion": "Boston, USA",
+              "farmaceuticaId": 1,
+              "ciudadId": 2,
+              "enviosCount": 1,
+              "detalle": {
+                "direccion": "150 Boylston St, Back Bay",
+                "codigo_postal": "02116",
+                "telefono": "+1 617-423-1000"
+              }
+            },
+            {
+              "codigo": 3,
+              "nombre": "Moderna HQ",
+              "ubicacion": "Boston, USA",
+              "farmaceuticaId": 2,
+              "ciudadId": 2,
+              "enviosCount": 2,
+              "detalle": {
+                "direccion": "200 Technology Square",
+                "codigo_postal": "02139",
+                "telefono": "+1 617-714-6500"
+              }
+            },
+            {
+              "codigo": 4,
+              "nombre": "AstraZeneca UK",
+              "ubicacion": "Londres, UK",
+              "farmaceuticaId": 3,
+              "ciudadId": 3,
+              "enviosCount": 1,
+              "detalle": {
+                "direccion": "1 Francis Crick Avenue",
+                "codigo_postal": "CB2 0AA",
+                "telefono": "+44 20 3749 5000"
+              }
+            },
+            {
+              "codigo": 5,
+              "nombre": "J&J España",
+              "ubicacion": "Barcelona, España",
+              "farmaceuticaId": 4,
+              "ciudadId": 4,
+              "enviosCount": 1,
+              "detalle": {
+                "direccion": "Carrer de Jordi Girona, 1-3",
+                "codigo_postal": "08034",
+                "telefono": "+34 93 254 19 20"
+              }
+            }
+          ],
+          "plantas": [
+            {
+              "numero": 1,
+              "nombre": "LabCorp NY Production",
+              "ubicacion": "Nueva York, USA",
+              "laboratorioId": 1,
+              "ciudadId": 1,
+              "paquetesCount": 2,
+              "detalle": {
+                "direccion": "45 Long Island Ave, Queens",
+                "codigo_postal": "11101",
+                "telefono": "+1 718-786-1000"
+              }
+            },
+            {
+              "numero": 2,
+              "nombre": "Pfizer Michigan Plant",
+              "ubicacion": "Michigan, USA",
+              "laboratorioId": 2,
+              "ciudadId": 6,
+              "paquetesCount": 3,
+              "detalle": {
+                "direccion": "7000 Portage Road",
+                "codigo_postal": "49001",
+                "telefono": "+1 269-833-4000"
+              }
+            },
+            {
+              "numero": 3,
+              "nombre": "Moderna Massachusetts",
+              "ubicacion": "Massachusetts, USA",
+              "laboratorioId": 3,
+              "ciudadId": 7,
+              "paquetesCount": 2,
+              "detalle": {
+                "direccion": "200 Technology Square",
+                "codigo_postal": "02139",
+                "telefono": "+1 617-491-9700"
+              }
+            },
+            {
+              "numero": 4,
+              "nombre": "AstraZeneca Sweden",
+              "ubicacion": "Estocolmo, Suecia",
+              "laboratorioId": 4,
+              "ciudadId": 8,
+              "paquetesCount": 1,
+              "detalle": {
+                "direccion": "Pepparedsleden 1",
+                "codigo_postal": "431 83",
+                "telefono": "+46 31 776 10 00"
+              }
+            },
+            {
+              "numero": 5,
+              "nombre": "Janssen Belgium",
+              "ubicacion": "Bruselas, Bélgica",
+              "laboratorioId": 5,
+              "ciudadId": 9,
+              "paquetesCount": 2,
+              "detalle": {
+                "direccion": "Turnhoutseweg 30",
+                "codigo_postal": "2340",
+                "telefono": "+32 14 60 21 11"
+              }
+            }
+          ],
+          "modelos": [
+            {
+              "codigo": 1,
+              "nombre": "Actros",
+              "year": 2023,
+              "marcaId": 1,
+              "camionesCount": 2
+            },
+            {
+              "codigo": 2,
+              "nombre": "Arocs",
+              "year": 2022,
+              "marcaId": 1,
+              "camionesCount": 1
+            },
+            {
+              "codigo": 3,
+              "nombre": "FH16",
+              "year": 2023,
+              "marcaId": 2,
+              "camionesCount": 1
+            },
+            {
+              "codigo": 4,
+              "nombre": "TGX",
+              "year": 2022,
+              "marcaId": 3,
+              "camionesCount": 1
+            },
+            {
+              "codigo": 5,
+              "nombre": "R-Series",
+              "year": 2023,
+              "marcaId": 4,
+              "camionesCount": 1
+            }
+          ]
+        },
+        "nivel3": {
+          "description": "Entidades operativas del sistema",
+          "camiones": [
+            {
+              "codigo": 1,
+              "matricula": "ABC-1234",
+              "modeloId": 1,
+              "year": 2022,
+              "MMA": 18000.00,
+              "estado": "disponible",
+              "enviosCount": 2
+            },
+            {
+              "codigo": 2,
+              "matricula": "DEF-5678",
+              "modeloId": 1,
+              "year": 2021,
+              "MMA": 16000.00,
+              "estado": "en_mantenimiento",
+              "enviosCount": 1
+            },
+            {
+              "codigo": 3,
+              "matricula": "GHI-9012",
+              "modeloId": 3,
+              "year": 2023,
+              "MMA": 20000.00,
+              "estado": "en_ruta",
+              "enviosCount": 1
+            },
+            {
+              "codigo": 4,
+              "matricula": "JKL-3456",
+              "modeloId": 4,
+              "year": 2022,
+              "MMA": 17500.00,
+              "estado": "disponible",
+              "enviosCount": 1
+            },
+            {
+              "codigo": 5,
+              "matricula": "MNO-7890",
+              "modeloId": 5,
+              "year": 2023,
+              "MMA": 18500.00,
+              "estado": "disponible",
+              "enviosCount": 0
+            }
+          ],
+          "conductores": [
+            {
+              "numero": 1,
+              "nombre": "Juan Pérez Gómez",
+              "licencia": "CDL-10001",
+              "camionesAsignados": [1, 2],
+              "enviosCount": 3
+            },
+            {
+              "numero": 2,
+              "nombre": "María López Martínez",
+              "licencia": "CDL-10002",
+              "camionesAsignados": [3],
+              "enviosCount": 1
+            },
+            {
+              "numero": 3,
+              "nombre": "John Smith",
+              "licencia": "CDL-10003",
+              "camionesAsignados": [4],
+              "enviosCount": 1
+            },
+            {
+              "numero": 4,
+              "nombre": "Emma Johnson",
+              "licencia": "CDL-10004",
+              "camionesAsignados": [],
+              "enviosCount": 0
+            },
+            {
+              "numero": 5,
+              "nombre": "Carlos Ruiz",
+              "licencia": "CDL-10005",
+              "camionesAsignados": [5],
+              "enviosCount": 0
+            }
+          ],
+          "envios": [
+            {
+              "numero": 1,
+              "fecha_progr": "2025-03-20",
+              "hora_salida": "08:00:00",
+              "hora_llegada": "16:00:00",
+              "camionId": 1,
+              "sucursalId": 1,
+              "conductorId": 1,
+              "estado": "completado",
+              "paquetesCount": 2,
+              "ruta": {
+                "origen": "LabCorp NY Production",
+                "destino": "Pfizer NY Central",
+                "distancia_km": 25
+              }
+            },
+            {
+              "numero": 2,
+              "fecha_progr": "2025-03-21",
+              "hora_salida": "09:00:00",
+              "hora_llegada": "17:00:00",
+              "camionId": 2,
+              "sucursalId": 2,
+              "conductorId": 1,
+              "estado": "en_transito",
+              "paquetesCount": 1,
+              "ruta": {
+                "origen": "Pfizer Michigan Plant",
+                "destino": "Pfizer Boston",
+                "distancia_km": 1100
+              }
+            },
+            {
+              "numero": 3,
+              "fecha_progr": "2025-03-22",
+              "hora_salida": "10:00:00",
+              "hora_llegada": "15:00:00",
+              "camionId": 3,
+              "sucursalId": 3,
+              "conductorId": 2,
+              "estado": "programado",
+              "paquetesCount": 2,
+              "ruta": {
+                "origen": "Moderna Massachusetts",
+                "destino": "Moderna HQ",
+                "distancia_km": 5
+              }
+            },
+            {
+              "numero": 4,
+              "fecha_progr": "2025-03-23",
+              "hora_salida": "07:00:00",
+              "hora_llegada": "19:00:00",
+              "camionId": 4,
+              "sucursalId": 4,
+              "conductorId": 3,
+              "estado": "cancelado",
+              "paquetesCount": 1,
+              "ruta": {
+                "origen": "AstraZeneca Sweden",
+                "destino": "AstraZeneca UK",
+                "distancia_km": 1500
+              }
+            },
+            {
+              "numero": 5,
+              "fecha_progr": "2025-03-24",
+              "hora_salida": "06:00:00",
+              "hora_llegada": "12:00:00",
+              "camionId": 1,
+              "sucursalId": 1,
+              "conductorId": 1,
+              "estado": "programado",
+              "paquetesCount": 3,
+              "ruta": {
+                "origen": "LabCorp NY Production",
+                "destino": "Pfizer NY Central",
+                "distancia_km": 25
+              }
+            }
+          ]
+        },
+        "nivel4": {
+          "description": "Detalles de operaciones y seguimiento",
+          "paquetes": [
+            {
+              "codigo": 1,
+              "lote": "PF20250301",
+              "vacuna": "COVID-19 Bivalent",
+              "temp_requerida": -70.00,
+              "plantaId": 1,
+              "envioId": 1,
+              "estado": "entregado",
+              "detalle": {
+                "fabricacion": "2025-02-15",
+                "caducidad": "2025-08-15",
+                "dosis": 5000
+              }
+            },
+            {
+              "codigo": 2,
+              "lote": "PF20250302",
+              "vacuna": "COVID-19 Pediatrica",
+              "temp_requerida": -70.00,
+              "plantaId": 1,
+              "envioId": 1,
+              "estado": "entregado",
+              "detalle": {
+                "fabricacion": "2025-02-20",
+                "caducidad": "2025-08-20",
+                "dosis": 3000
+              }
+            },
+            {
+              "codigo": 3,
+              "lote": "MD20250301",
+              "vacuna": "COVID-19 Spikevax",
+              "temp_requerida": -20.00,
+              "plantaId": 2,
+              "envioId": 2,
+              "estado": "en_transito",
+              "detalle": {
+                "fabricacion": "2025-03-01",
+                "caducidad": "2025-09-01",
+                "dosis": 4000
+              }
+            },
+            {
+              "codigo": 4,
+              "lote": "AZ20250301",
+              "vacuna": "COVID-19 Vaxzevria",
+              "temp_requerida": 2.00,
+              "plantaId": 4,
+              "envioId": 4,
+              "estado": "cancelado",
+              "detalle": {
+                "fabricacion": "2025-02-25",
+                "caducidad": "2025-08-25",
+                "dosis": 6000
+              }
+            },
+            {
+              "codigo": 5,
+              "lote": "JJ20250301",
+              "vacuna": "COVID-19 Janssen",
+              "temp_requerida": 2.00,
+              "plantaId": 5,
+              "envioId": 5,
+              "estado": "preparacion",
+              "detalle": {
+                "fabricacion": "2025-03-10",
+                "caducidad": "2025-09-10",
+                "dosis": 3500
+              }
+            }
+          ],
+          "registros_temperatura": [
+            {
+              "numero": 1,
+              "envioId": 1,
+              "fecha": "2025-03-20",
+              "hora": "10:00:00",
+              "temperatura": -68.50,
+              "estado": "ok"
+            },
+            {
+              "numero": 2,
+              "envioId": 1,
+              "fecha": "2025-03-20",
+              "hora": "12:00:00",
+              "temperatura": -69.20,
+              "estado": "ok"
+            },
+            {
+              "numero": 3,
+              "envioId": 2,
+              "fecha": "2025-03-21",
+              "hora": "11:00:00",
+              "temperatura": -19.80,
+              "estado": "ok"
+            },
+            {
+              "numero": 4,
+              "envioId": 3,
+              "fecha": "2025-03-22",
+              "hora": "14:00:00",
+              "temperatura": 2.50,
+              "estado": "alerta"
+            },
+            {
+              "numero": 5,
+              "envioId": 4,
+              "fecha": "2025-03-23",
+              "hora": "09:00:00",
+              "temperatura": 8.00,
+              "estado": "critico"
+            }
+          ],
+          "incidentes": [
+            {
+              "codigo": 1,
+              "envioId": 4,
+              "fecha": "2025-03-23",
+              "hora": "09:15:00",
+              "descripcion": "Falla en sistema de refrigeración",
+              "severidad": "alta",
+              "resuelto": false
+            },
+            {
+              "codigo": 2,
+              "envioId": 3,
+              "fecha": "2025-03-22",
+              "hora": "14:30:00",
+              "descripcion": "Temperatura elevada por corto período",
+              "severidad": "media",
+              "resuelto": true
+            },
+            {
+              "codigo": 3,
+              "envioId": 1,
+              "fecha": "2025-03-20",
+              "hora": "13:45:00",
+              "descripcion": "Retraso por tráfico",
+              "severidad": "baja",
+              "resuelto": true
+            }
+          ],
+          "estados_envio": [
+            {
+              "numero": 1,
+              "envioId": 1,
+              "fecha": "2025-03-20",
+              "hora": "08:00:00",
+              "estado": "iniciado",
+              "descripcion": "Salida de planta"
+            },
+            {
+              "numero": 2,
+              "envioId": 1,
+              "fecha": "2025-03-20",
+              "hora": "16:00:00",
+              "estado": "completado",
+              "descripcion": "Llegada a sucursal"
+            },
+            {
+              "numero": 3,
+              "envioId": 2,
+              "fecha": "2025-03-21",
+              "hora": "09:00:00",
+              "estado": "iniciado",
+              "descripcion": "Salida de planta"
+            },
+            {
+              "numero": 4,
+              "envioId": 4,
+              "fecha": "2025-03-23",
+              "hora": "07:00:00",
+              "estado": "cancelado",
+              "descripcion": "Cancelado por falla técnica"
+            },
+            {
+              "numero": 5,
+              "envioId": 5,
+              "fecha": "2025-03-24",
+              "hora": "06:00:00",
+              "estado": "programado",
+              "descripcion": "Preparación para salida"
+            }
+          ]
+        }
+      },
+      "links": {
+        "self": "/api/vacunas/completa?page=1",
+        "first": "/api/vacunas/completa?page=1",
+        "last": "/api/vacunas/completa?page=1",
+        "documentation": "https://api.dominio.com/docs/vacunas"
+      }
+    }
+  }
