@@ -1,4 +1,4 @@
-const API_URL = "http://192.168.0.8/ProyectoVacunas/backend/consultas/rutas.php";
+const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/rutas.php";
 
 // Obtener todas las rutas (GET)
 export const getRutas = async () => {
