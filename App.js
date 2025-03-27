@@ -14,7 +14,8 @@ export default function App() {
                 initialRouteName="Login"
                 screenOptions={{
                     headerShown: false
-                }}>
+                }}
+            >
                 <Stack.Screen name="Login" component={Login} />
                 <Stack.Screen name="IndexAdmin" component={IndexAdmin} />
                 <Stack.Screen name="IndexUsuarios" component={IndexUsuarios} />

@@ -1,4 +1,4 @@
-const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/auth.php";
+const API_URL = "http://192.168.0.8/ProyectoVacunas/backend/consultas/auth.php";
 
 // Función para manejar errores de forma consistente
 const handleApiError = (error, context) => {
@@ -53,15 +53,19 @@ export const loginUser = async (credentials) => {
       return result;
     }
 
-    // Estructura consistente con tus otras APIs
+    // Verificar si es admin o usuario normal
+    const { id, username, rol, num_conductor, nombre_conductor, tipo_usuario } = result.user;
+
     return {
       success: true,
       data: {
-        id: result.user.id,
-        username: result.user.username,
-        rol: result.user.rol,
-        num_conductor: result.user.num_conductor,
-        nombre_conductor: result.user.nombre_conductor
+        id,
+        username,
+        rol,
+        num_conductor,
+        nombre_conductor,
+        tipo_usuario,
+        isAdmin: tipo_usuario === "admin"
       }
     };
   } catch (error) {

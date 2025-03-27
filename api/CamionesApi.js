@@ -1,4 +1,4 @@
-const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/camiones.php";
+const API_URL = "http://192.168.0.8/ProyectoVacunas/backend/consultas/camiones.php";
 
 // Obtener todos los camiones (GET)
 export const getCamiones = async () => {

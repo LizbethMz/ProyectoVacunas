@@ -1,17 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { NavigationContainer } from '@react-navigation/native';
+// Eliminamos la importación de NavigationContainer, ya que no se usará aquí.
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator, DrawerItemList } from '@react-navigation/drawer';
 import Temperatura from './Consultas/Temperatura';
 import Choferes from './Consultas/Conductores';
 import Camiones from './Consultas/Camiones';
-import Envios from './Consultas/Envios'; 
-import Incidentes from './Consultas/Incidentes'; 
-import Rutas from './Consultas/Rutas'; 
-
+import Envios from './Consultas/Envios';
+import Incidentes from './Consultas/Incidentes';
+import Rutas from './Consultas/Rutas';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -87,20 +86,22 @@ function HomeScreen({ navigation }) {
             <Icon name="shipping-fast" style={styles.iconShipping} />
           </View>
           <View style={styles.envioCenter}>
-            <Text style={styles.envioText}>Planta MedicPro <Icon name="angle-right" style={styles.iconShipping} /> Clinica 130</Text>
+            <Text style={styles.envioText}>
+              Planta MedicPro <Icon name="angle-right" style={styles.iconShipping} /> Clinica 130
+            </Text>
           </View>
-          <View style={styles.envioRight}>
-          </View>
+          <View style={styles.envioRight} />
         </View>
         <View style={styles.envioCard}>
           <View style={styles.envioLeft}>
             <Icon name="shipping-fast" style={styles.iconShipping} />
           </View>
           <View style={styles.envioCenter}>
-            <Text style={styles.envioText}>Farmaceutica Luna <Icon name="angle-right" style={styles.iconShipping} /> Clinica General 23</Text>
+            <Text style={styles.envioText}>
+              Farmaceutica Luna <Icon name="angle-right" style={styles.iconShipping} /> Clinica General 23
+            </Text>
           </View>
-          <View style={styles.envioRight}>
-          </View>
+          <View style={styles.envioRight} />
         </View>
       </View>
     </ScrollView>
@@ -133,8 +134,8 @@ function CustomDrawerContent(props) {
       <View style={styles.drawerHeader}>
         <Text style={styles.drawerTitle}>TransportApp</Text>
       </View>
-      <DrawerItemList 
-        {...props} 
+      <DrawerItemList
+        {...props}
         itemStyle={styles.drawerItem}
         iconContainerStyle={styles.drawerIconContainer}
       />
@@ -156,7 +157,7 @@ function MainDrawer() {
         headerTitleStyle: { color: '#005398', fontWeight: 'bold' },
         drawerLabelStyle: { marginLeft: -15, fontSize: 16 },
         headerLeft: () => (
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => navigation.toggleDrawer()}
             style={styles.headerMenuButton}
           >
@@ -165,9 +166,9 @@ function MainDrawer() {
         ),
       })}
     >
-      <Drawer.Screen 
-        name="Home" 
-        component={HomeScreen} 
+      <Drawer.Screen
+        name="Home"
+        component={HomeScreen}
         options={{
           title: 'Inicio',
           drawerIcon: ({ color }) => (
@@ -175,11 +176,11 @@ function MainDrawer() {
               <Icon name="home" size={20} color={color} />
             </View>
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Temperatura" 
-        component={Temperatura} 
+      <Drawer.Screen
+        name="Temperatura"
+        component={Temperatura}
         options={{
           title: 'Consulta de Temperatura',
           drawerIcon: ({ color }) => (
@@ -187,11 +188,11 @@ function MainDrawer() {
               <Icon name="thermometer-half" size={20} color={color} />
             </View>
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Choferes" 
-        component={Choferes} 
+      <Drawer.Screen
+        name="Choferes"
+        component={Choferes}
         options={{
           title: 'Consulta de Choferes',
           drawerIcon: ({ color }) => (
@@ -199,11 +200,11 @@ function MainDrawer() {
               <Icon name="user-tie" size={20} color={color} />
             </View>
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Camiones" 
-        component={Camiones} 
+      <Drawer.Screen
+        name="Camiones"
+        component={Camiones}
         options={{
           title: 'Consulta de Camiones',
           drawerIcon: ({ color }) => (
@@ -211,11 +212,11 @@ function MainDrawer() {
               <Icon name="truck" size={20} color={color} />
             </View>
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Envios" 
-        component={Envios} 
+      <Drawer.Screen
+        name="Envios"
+        component={Envios}
         options={{
           title: 'Gestión de Envíos',
           drawerIcon: ({ color }) => (
@@ -223,11 +224,11 @@ function MainDrawer() {
               <Icon name="shipping-fast" size={20} color={color} />
             </View>
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Incidentes" 
-        component={Incidentes} 
+      <Drawer.Screen
+        name="Incidentes"
+        component={Incidentes}
         options={{
           title: 'Gestión de Incidentes',
           drawerIcon: ({ color }) => (
@@ -235,11 +236,11 @@ function MainDrawer() {
               <Icon name="exclamation-triangle" size={20} color={color} />
             </View>
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Rutas" 
-        component={Rutas} 
+      <Drawer.Screen
+        name="Rutas"
+        component={Rutas}
         options={{
           title: 'Gestión de Rutas',
           drawerIcon: ({ color }) => (
@@ -247,11 +248,11 @@ function MainDrawer() {
               <Icon name="route" size={20} color={color} />
             </View>
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Configuración" 
-        component={SettingsScreen} 
+      <Drawer.Screen
+        name="Configuración"
+        component={SettingsScreen}
         options={{
           title: 'Configuración',
           drawerIcon: ({ color }) => (
@@ -259,22 +260,16 @@ function MainDrawer() {
               <Icon name="cog" size={20} color={color} />
             </View>
           ),
-        }} 
+        }}
       />
     </Drawer.Navigator>
   );
 }
 
-// Navegación Principal
-export default function App() {
-  return (
-    <NavigationContainer>
-      <MainDrawer />
-    </NavigationContainer>
-  );
-}
+// Exportamos directamente el navegador principal (MainDrawer)
+// El NavigationContainer se utilizará únicamente en el archivo raíz (por ejemplo, en App.js)
+export default MainDrawer;
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -451,17 +446,17 @@ const styles = StyleSheet.create({
   },
   drawerContainer: {
     flex: 1,
-    backgroundColor: 'rgb(230, 243, 254)'
+    backgroundColor: 'rgb(230, 243, 254)',
   },
   drawerHeader: {
     padding: 20,
     backgroundColor: 'rgb(189, 211, 228)',
-    marginBottom: 10
+    marginBottom: 10,
   },
   drawerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#005398'
+    color: '#005398',
   },
   drawerItem: {
     marginVertical: 5,

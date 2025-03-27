@@ -25,20 +25,16 @@ try {
             throw new Exception('Datos JSON inválidos: ' . json_last_error_msg());
         }
         
-        if (empty($data->username)) {
-            throw new Exception('El nombre de usuario es requerido');
-        }
-        
-        if (empty($data->password)) {
-            throw new Exception('La contraseña es requerida');
+        if (empty($data->username) || empty($data->password)) {
+            throw new Exception('Usuario y contraseña son requeridos');
         }
 
         $connection = Conexion::get_connection();
         
-        // Consulta preparada con JOIN a la tabla conductor
+        // Consulta preparada con JOIN opcional con la tabla conductor
         $query = $connection->prepare("
-            SELECT u.id, u.username, u.rol, u.num_conductor, 
-                   c.nombre as nombre_conductor 
+            SELECT u.id, u.username, u.rol, u.num_conductor, u.tipo_usuario,
+                   c.nombre_pila 
             FROM usuarios u
             LEFT JOIN conductor c ON u.num_conductor = c.numero
             WHERE u.username = ? AND u.password = ?
@@ -66,7 +62,8 @@ try {
                     'username' => $user['username'],
                     'rol' => $user['rol'],
                     'num_conductor' => $user['num_conductor'],
-                    'nombre_conductor' => $user['nombre_conductor']
+                    'nombre_conductor' => $user['nombre_pila'], // Solo el nombre de pila
+                    'tipo_usuario' => $user['tipo_usuario']
                 ]
             ];
         } else {
@@ -92,4 +89,3 @@ try {
         'message' => 'Error en el servidor: ' . $e->getMessage()
     ]);
 }
-?>

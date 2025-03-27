@@ -20,24 +20,36 @@ const LoginScreen = () => {
       
       const result = await loginUser({ username, password });
 
-      if (!result.success) {
-        throw new Error(result.message);
+      if (!result?.success) {
+        throw new Error(result?.message || 'Error de autenticación');
       }
 
       const user = result.data;
       
+      // Mostrar en consola los datos del usuario autenticado
+      console.log("Usuario autenticado:", user);
+
       // Redirección basada en el rol
       switch(user.rol) {
         case 'admin':
-          navigation.navigate('IndexAdmin', { user });
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'IndexAdmin', params: { user } }]
+          });
           break;
         case 'chofer':
-          navigation.navigate('IndexChofer', { 
-            user,
-            conductorInfo: {
-              num_conductor: user.num_conductor,
-              nombre: user.nombre_conductor
-            }
+          navigation.reset({
+            index: 0,
+            routes: [{
+              name: 'IndexUsuarios',
+              params: { 
+                user,
+                conductorInfo: {
+                  num_conductor: user.num_conductor,
+                  nombre: user.nombre_conductor
+                }
+              }
+            }]
           });
           break;
         default:
@@ -116,7 +128,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: 50,
   },
-  disabledButton: {
+  buttonDisabled: {
     backgroundColor: '#7f9bb3',
   },
   buttonText: {

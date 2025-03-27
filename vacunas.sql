@@ -290,10 +290,10 @@ INSERT INTO usuarios (username, password, rol) VALUES
 
 -- Insertar usuarios para los conductores existentes
 INSERT INTO usuarios (username, password, rol, num_conductor) VALUES
-('mmartinez', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'chofer', 2),
-('crodriguez', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'chofer', 3),
-('ahernandez', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'chofer', 4),
-('ldiaz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'chofer', 5);
+('mmartinez', '123', 'chofer', 2),
+('crodriguez', '123', 'chofer', 3),
+('ahernandez', '123', 'chofer', 4),
+('ldiaz', '123', 'chofer', 5);
 
 ALTER TABLE usuarios 
 ADD COLUMN IF NOT EXISTS tipo_usuario VARCHAR(10) DEFAULT 'user' NOT NULL;
