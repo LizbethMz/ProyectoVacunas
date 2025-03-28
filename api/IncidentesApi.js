@@ -1,4 +1,5 @@
 const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/incidentes.php";
+//const API_URL = "http://172.18.2.160/ProyectoApp/backend/consultas/incidentes.php";
 
 // Obtener todos los incidentes (GET)
 export const getIncidentes = async () => {

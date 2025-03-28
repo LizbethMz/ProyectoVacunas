@@ -1,4 +1,6 @@
 const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/envios.php";
+//const API_URL = "http://172.18.2.160/ProyectoApp/backend/consultas/envios.php";
+
 
 // Obtener todos los envíos (GET)
 export const getEnvios = async () => {

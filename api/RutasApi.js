@@ -1,4 +1,6 @@
 const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/rutas.php";
+//const API_URL = "http://172.18.2.160/ProyectoApp/backend/consultas/rutas.php";
+
 
 // Obtener todas las rutas (GET)
 export const getRutas = async () => {

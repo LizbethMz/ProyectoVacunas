@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-// Eliminamos la importación de NavigationContainer, ya que no se usará aquí.
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator, DrawerItemList } from '@react-navigation/drawer';
@@ -11,14 +10,42 @@ import Camiones from './Consultas/Camiones';
 import Envios from './Consultas/Envios';
 import Incidentes from './Consultas/Incidentes';
 import Rutas from './Consultas/Rutas';
+import Usuarios from './Consultas/Usuarios';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
-// Pantalla de Inicio con header personalizado
+function GestionUsuariosMenu({ navigation }) {
+  return (
+    <ScrollView contentContainerStyle={styles.menuContainer}>
+      <Text style={styles.menuTitle}>Módulos de Gestión</Text>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Usuarios')}
+      >
+        <Icon name="users-cog" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Gestión de Usuarios</Text>
+        <Text style={styles.menuCardText}>Administra usuarios del sistema</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Choferes')}
+      >
+        <Icon name="user-tie" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Gestión de Choferes</Text>
+        <Text style={styles.menuCardText}>Administra información de conductores</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
+
+
 function HomeScreen({ navigation }) {
   return (
+
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Dashboard General</Text>
 
@@ -108,7 +135,7 @@ function HomeScreen({ navigation }) {
   );
 }
 
-// Pantalla de Configuración simplificada
+
 function SettingsScreen() {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -127,7 +154,7 @@ function SettingsScreen() {
   );
 }
 
-// Componente personalizado para el Drawer con padding en iconos
+
 function CustomDrawerContent(props) {
   return (
     <View style={styles.drawerContainer}>
@@ -143,7 +170,6 @@ function CustomDrawerContent(props) {
   );
 }
 
-// Drawer Navigator para el menú lateral
 function MainDrawer() {
   return (
     <Drawer.Navigator
@@ -191,22 +217,38 @@ function MainDrawer() {
         }}
       />
       <Drawer.Screen
+        name="GestionUsuarios"
+        component={GestionUsuariosMenu}
+        options={{
+          title: 'Gestión de Usuarios',
+          drawerIcon: ({ color }) => (
+            <View style={styles.drawerIconContainer}>
+              <Icon name="users-cog" size={20} color={color} />
+            </View>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Usuarios"
+        component={Usuarios}
+        options={{
+          title: 'Admin. Usuarios',
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
+      <Drawer.Screen
         name="Choferes"
         component={Choferes}
         options={{
-          title: 'Consulta de Choferes',
-          drawerIcon: ({ color }) => (
-            <View style={styles.drawerIconContainer}>
-              <Icon name="user-tie" size={20} color={color} />
-            </View>
-          ),
+          title: 'Admin. Choferes',
+          drawerItemStyle: { display: 'none' } // Oculta del menú lateral
         }}
       />
       <Drawer.Screen
         name="Camiones"
         component={Camiones}
         options={{
-          title: 'Consulta de Camiones',
+          title: 'Gestión de Camiones',
           drawerIcon: ({ color }) => (
             <View style={styles.drawerIconContainer}>
               <Icon name="truck" size={20} color={color} />
@@ -266,8 +308,8 @@ function MainDrawer() {
   );
 }
 
-// Exportamos directamente el navegador principal (MainDrawer)
-// El NavigationContainer se utilizará únicamente en el archivo raíz (por ejemplo, en App.js)
+
+
 export default MainDrawer;
 
 const styles = StyleSheet.create({
@@ -468,4 +510,41 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     padding: 10,
   },
+  menuContainer: {
+    flexGrow: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    padding: 20,
+  },
+  menuTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#005398',
+    marginBottom: 30,
+  },
+  menuCard: {
+    backgroundColor: 'rgb(230, 242, 255)',
+    width: '100%',
+    borderRadius: 10,
+    padding: 25,
+    marginBottom: 20,
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  menuCardTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#005398',
+    marginVertical: 10,
+  },
+  menuCardText: {
+    fontSize: 14,
+    color: '#003B75',
+    textAlign: 'center',
+  },
+
 });
