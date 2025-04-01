@@ -1,34 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { getConductores, createConductor, updateConductor, deleteConductor, checkNumeroConductorExistente } from '../api/ConductoresApi';
+import { getPaquetes, createPaquete, updatePaquete, deletePaquete } from '../api/PaquetesApi';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import Mensaje from './Mensaje';
 
-const Conductores = () => {
-  const [conductoresData, setConductoresData] = useState([]);
+const Paquetes = () => {
+  const [paquetesData, setPaquetesData] = useState([]);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isConsulting, setIsConsulting] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [newConductor, setNewConductor] = useState({
-    numero: '',
-    nombre_pila: '',
-    apellidoP: '',
-    apellidoM: '',
+  const [newPaquete, setNewPaquete] = useState({
+    codigo: '',
+    lote: '',
+    temp_requerida: '',
+    descripcion: '',
+    vacuna: '',
+    num_planta: '',
+    num_envio: ''
   });
-  const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
-
-  const mostrarMensaje = (texto, tipo = 'exito') => {
-    setMensaje({ texto, tipo });
-    setTimeout(() => setMensaje({ texto: '', tipo: '' }), 5000);
-  };
 
   const fetchData = async () => {
     try {
-      const data = await getConductores();
-      setConductoresData(data);
+      const data = await getPaquetes();
+      setPaquetesData(data);
     } catch (error) {
-      console.error('Error obteniendo datos de conductores:', error);
-      mostrarMensaje('Error al cargar los conductores', 'error');
+      console.error('Error obteniendo datos de paquetes:', error);
+      alert('Error al cargar los paquetes');
     }
   };
 
@@ -38,48 +34,42 @@ const Conductores = () => {
 
   const handleRegisterOrUpdate = async () => {
     try {
-      // Validar campos vacíos
-      if (!newConductor.numero || !newConductor.nombre_pila || !newConductor.apellidoP || !newConductor.apellidoM) {
-        mostrarMensaje('Todos los campos son requeridos', 'error');
-        return;
-      }
-
-      // Validar formato numérico
-      const numero = parseInt(newConductor.numero);
-      if (isNaN(numero)) {
-        mostrarMensaje('El número debe ser un valor numérico', 'error');
-        return;
-      }
-
-      // Solo verificar si es nuevo registro (no en edición)
-      if (editingIndex === null) {
-        const existe = await checkNumeroConductorExistente(numero);
-        if (existe) {
-          mostrarMensaje('El número de conductor ya está registrado', 'error');
-          return;
-        }
-      }
-
       if (editingIndex !== null) {
-        await updateConductor(newConductor);
-        mostrarMensaje('Conductor actualizado exitosamente', 'exito');
-        setEditingIndex(null);
+        await updatePaquete(newPaquete.codigo, newPaquete);
+        alert('Paquete actualizado correctamente');
       } else {
-        await createConductor({ ...newConductor, numero });
-        mostrarMensaje('Conductor creado exitosamente', 'exito');
+        await createPaquete(newPaquete);
+        alert('Paquete registrado correctamente');
       }
-
       fetchData();
-      setNewConductor({ numero: '', nombre_pila: '', apellidoP: '', apellidoM: '' });
+      setEditingIndex(null);
+      setNewPaquete({ 
+        codigo: '', 
+        lote: '', 
+        temp_requerida: '', 
+        descripcion: '', 
+        vacuna: '', 
+        num_planta: '', 
+        num_envio: '' 
+      });
       setIsRegistering(false);
     } catch (error) {
       console.error('Error:', error);
-      mostrarMensaje(error.message || 'Ocurrió un error al procesar la solicitud', 'error');
+      alert(`Error: ${error.message}`);
     }
   };
 
   const handleEdit = (index) => {
-    setNewConductor(conductoresData[index]);
+    const paqueteToEdit = paquetesData[index];
+    setNewPaquete({
+      codigo: paqueteToEdit.codigo?.toString() || '',
+      lote: paqueteToEdit.lote || '',
+      temp_requerida: paqueteToEdit.temp_requerida?.toString() || '',
+      descripcion: paqueteToEdit.descripcion || '',
+      vacuna: paqueteToEdit.vacuna || '',
+      num_planta: paqueteToEdit.num_planta?.toString() || '',
+      num_envio: paqueteToEdit.num_envio?.toString() || ''
+    });
     setEditingIndex(index);
     setIsRegistering(true);
     setIsConsulting(false);
@@ -87,13 +77,13 @@ const Conductores = () => {
 
   const handleDelete = async (index) => {
     try {
-      const numero = conductoresData[index].numero;
-      await deleteConductor(numero);
-      mostrarMensaje('Conductor eliminado exitosamente', 'exito');
+      const codigo = paquetesData[index].codigo;
+      await deletePaquete(codigo);
+      alert('Paquete eliminado correctamente');
       fetchData();
     } catch (error) {
-      console.error('Error eliminando conductor:', error);
-      mostrarMensaje('Error al eliminar conductor', 'error');
+      console.error('Error eliminando paquete:', error);
+      alert(`Error al eliminar: ${error.message}`);
     }
   };
 
@@ -105,9 +95,7 @@ const Conductores = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Gestión de Conductores</Text>
-
-      <Mensaje texto={mensaje.texto} tipo={mensaje.tipo} />
+      <Text style={styles.title}>Gestión de Paquetes</Text>
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
@@ -115,7 +103,7 @@ const Conductores = () => {
           onPress={handleConsult}
         >
           <Icon name="search" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.primaryButtonText}>Consultar Conductores</Text>
+          <Text style={styles.primaryButtonText}>Consultar Paquetes</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -124,46 +112,63 @@ const Conductores = () => {
             setIsRegistering(true);
             setIsConsulting(false);
             setEditingIndex(null);
-            setNewConductor({ numero: '', nombre_pila: '', apellidoP: '', apellidoM: '' });
+            setNewPaquete({ 
+              codigo: '', 
+              lote: '', 
+              temp_requerida: '', 
+              descripcion: '', 
+              vacuna: '', 
+              num_planta: '', 
+              num_envio: '' 
+            });
           }}
         >
-          <Icon name="user-plus" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.primaryButtonText}>Registrar Nuevo Conductor</Text>
+          <Icon name="plus-circle" size={20} color="#fff" style={styles.buttonIcon} />
+          <Text style={styles.primaryButtonText}>Registrar Nuevo Paquete</Text>
         </TouchableOpacity>
       </View>
 
       {isConsulting && (
         <View style={styles.infoContainer}>
-          <Text style={styles.subTitle}>Información de Conductores</Text>
-          {conductoresData.map((conductor, index) => (
+          <Text style={styles.subTitle}>Información de Paquetes</Text>
+          {paquetesData.map((paquete, index) => (
             <View key={index} style={styles.card}>
               <View style={styles.cardHeader}>
-                <Icon name="user-tie" size={24} color="#005398" />
-                <Text style={styles.cardTitle}>Conductor #{conductor.numero}</Text>
+                <Icon name="box" size={24} color="#005398" />
+                <Text style={styles.cardTitle}>Paquete #{paquete.codigo}</Text>
               </View>
-
+              
               <View style={styles.cardBody}>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>Nombre:</Text> {conductor.nombre_pila}
+                  <Text style={styles.label}>Lote:</Text> {paquete.lote}
                 </Text>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>Apellido Paterno:</Text> {conductor.apellidoP}
+                  <Text style={styles.label}>Temp. Requerida:</Text> {paquete.temp_requerida}°C
                 </Text>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>Apellido Materno:</Text> {conductor.apellidoM}
+                  <Text style={styles.label}>Descripción:</Text> {paquete.descripcion}
+                </Text>
+                <Text style={styles.cardText}>
+                  <Text style={styles.label}>Vacuna:</Text> {paquete.vacuna}
+                </Text>
+                <Text style={styles.cardText}>
+                  <Text style={styles.label}>N° Planta:</Text> {paquete.num_planta}
+                </Text>
+                <Text style={styles.cardText}>
+                  <Text style={styles.label}>N° Envío:</Text> {paquete.num_envio}
                 </Text>
               </View>
 
               <View style={styles.cardFooter}>
-                <TouchableOpacity
-                  style={styles.secondaryButton}
+                <TouchableOpacity 
+                  style={styles.secondaryButton} 
                   onPress={() => handleEdit(index)}
                 >
                   <Icon name="edit" size={16} color="#fff" />
                   <Text style={styles.secondaryButtonText}> Editar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.secondaryButton, styles.deleteButton]}
+                <TouchableOpacity 
+                  style={[styles.secondaryButton, styles.deleteButton]} 
                   onPress={() => handleDelete(index)}
                 >
                   <Icon name="trash-alt" size={16} color="#fff" />
@@ -178,42 +183,67 @@ const Conductores = () => {
       {isRegistering && (
         <View style={styles.form}>
           <Text style={styles.subTitle}>
-            {editingIndex !== null ? 'Editar Conductor' : 'Registrar Nuevo Conductor'}
+            {editingIndex !== null ? 'Editar Paquete' : 'Registrar Nuevo Paquete'}
           </Text>
-
+          
           <TextInput
             style={[styles.input, editingIndex !== null && styles.disabledInput]}
-            placeholder="Número"
-            value={newConductor.numero}
-            onChangeText={(text) => editingIndex === null && setNewConductor({ ...newConductor, numero: text })}
+            placeholder="Código"
+            value={newPaquete.codigo}
+            onChangeText={(text) => setNewPaquete({ ...newPaquete, codigo: text })}
             keyboardType="numeric"
             editable={editingIndex === null}
           />
           <TextInput
-            style={styles.input}
-            placeholder="Nombre"
-            value={newConductor.nombre_pila}
-            onChangeText={(text) => setNewConductor({ ...newConductor, nombre_pila: text })}
+            style={[styles.input, editingIndex !== null && styles.disabledInput]}
+            placeholder="Lote"
+            value={newPaquete.lote}
+            onChangeText={(text) => setNewPaquete({ ...newPaquete, lote: text })}
+            editable={editingIndex === null}
           />
           <TextInput
             style={styles.input}
-            placeholder="Apellido Paterno"
-            value={newConductor.apellidoP}
-            onChangeText={(text) => setNewConductor({ ...newConductor, apellidoP: text })}
+            placeholder="Temperatura Requerida (ej. 2.50)"
+            value={newPaquete.temp_requerida}
+            onChangeText={(text) => setNewPaquete({ ...newPaquete, temp_requerida: text })}
+            keyboardType="numeric"
           />
           <TextInput
             style={styles.input}
-            placeholder="Apellido Materno"
-            value={newConductor.apellidoM}
-            onChangeText={(text) => setNewConductor({ ...newConductor, apellidoM: text })}
+            placeholder="Descripción"
+            value={newPaquete.descripcion}
+            onChangeText={(text) => setNewPaquete({ ...newPaquete, descripcion: text })}
+            multiline
           />
-
-          <TouchableOpacity
-            style={styles.primaryButton}
+          <TextInput
+            style={styles.input}
+            placeholder="Vacuna"
+            value={newPaquete.vacuna}
+            onChangeText={(text) => setNewPaquete({ ...newPaquete, vacuna: text })}
+          />
+          <TextInput
+            style={[styles.input, editingIndex !== null && styles.disabledInput]}
+            placeholder="Número de Planta"
+            value={newPaquete.num_planta}
+            onChangeText={(text) => setNewPaquete({ ...newPaquete, num_planta: text })}
+            keyboardType="numeric"
+            editable={editingIndex === null}
+          />
+          <TextInput
+            style={[styles.input, editingIndex !== null && styles.disabledInput]}
+            placeholder="Número de Envío"
+            value={newPaquete.num_envio}
+            onChangeText={(text) => setNewPaquete({ ...newPaquete, num_envio: text })}
+            keyboardType="numeric"
+            editable={editingIndex === null}
+          />
+          
+          <TouchableOpacity 
+            style={styles.primaryButton} 
             onPress={handleRegisterOrUpdate}
           >
             <Text style={styles.primaryButtonText}>
-              {editingIndex !== null ? 'Actualizar Conductor' : 'Registrar Conductor'}
+              {editingIndex !== null ? 'Actualizar Paquete' : 'Registrar Paquete'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -336,6 +366,10 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
   },
+  disabledInput: {
+    backgroundColor: '#f0f0f0',
+    color: '#888',
+  },
   subTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -343,10 +377,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
   },
-  disabledInput: {
-    backgroundColor: '#f5f5f5',
-    color: '#888',
-  },
 });
 
-export default Conductores;
+export default Paquetes;

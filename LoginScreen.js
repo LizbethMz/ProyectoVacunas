@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Image } from 'react-native';
 import { loginUser } from './api/AuthApi';
 import { useNavigation } from '@react-navigation/native';
 
@@ -17,7 +17,7 @@ const LoginScreen = () => {
       }
 
       setLoading(true);
-      
+
       const result = await loginUser({ username, password });
 
       if (!result?.success) {
@@ -25,11 +25,9 @@ const LoginScreen = () => {
       }
 
       const user = result.data;
-      
-      // Mostrar en consola los datos del usuario autenticado
+
       console.log("Usuario autenticado:", user);
 
-      // Redirección basada en el rol
       switch(user.rol) {
         case 'admin':
           navigation.reset({
@@ -64,6 +62,12 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* Logo de la empresa */}
+      <Image source={require('./images/Logo_Azul.png')} style={styles.logo} />
+
+      {/* Nombre de la empresa */}
+      <Text style={styles.companyName}>MediSafe</Text>
+
       <Text style={styles.title}>Inicio de Sesión</Text>
 
       <TextInput
@@ -103,11 +107,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
     backgroundColor: '#fff',
+    marginTop: -50, 
+  },
+  logo: {
+    width: 300,
+    height: undefined,
+    aspectRatio: 1, 
+    alignSelf: 'center',
+    marginBottom: 2,
+    resizeMode: 'contain',
+  },
+  companyName: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#005398',
+    marginBottom: 15,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 15, 
     textAlign: 'center',
     color: '#005398',
   },

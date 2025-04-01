@@ -1,8 +1,9 @@
-//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/camiones.php";
-const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/camiones.php";
+//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/plantas.php";
+const API_URL = "http:// 172.18.3.5/ProyectoApp/backend/consultas/plantas.php";
 
-// Obtener todos los camiones (GET)
-export const getCamiones = async () => {
+
+// Obtener todas las plantas (GET)
+export const getPlantas = async () => {
   try {
     const response = await fetch(API_URL, {
       method: "GET",
@@ -18,20 +19,20 @@ export const getCamiones = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error obteniendo camiones:", error);
+    console.error("Error obteniendo plantas:", error);
     throw error;
   }
 };
 
-// Crear un camión (POST)
-export const createCamion = async (camion) => {
+// Crear una planta (POST)
+export const createPlanta = async (planta) => {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(camion),
+      body: JSON.stringify(planta),
     });
 
     if (!response.ok) {
@@ -41,20 +42,27 @@ export const createCamion = async (camion) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error creando camión:", error);
+    console.error("Error creando planta:", error);
     throw error;
   }
 };
 
-// Actualizar un camión (PUT)
-export const updateCamion = async (codigo, camion) => {
+// Actualizar una planta (PUT) - Solo teléfono y correo
+export const updatePlanta = async (numero, planta) => {
   try {
+    // Solo enviamos teléfono y correo para actualizar
+    const { telefono, correo } = planta;
+    
     const response = await fetch(API_URL, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...camion, codigo }),
+      body: JSON.stringify({ 
+        numero,
+        telefono,
+        correo 
+      }),
     });
 
     if (!response.ok) {
@@ -65,20 +73,20 @@ export const updateCamion = async (codigo, camion) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error actualizando camión:", error);
+    console.error("Error actualizando planta:", error);
     throw error;
   }
 };
 
-// Eliminar un camión (DELETE)
-export const deleteCamion = async (codigo) => {
+// Eliminar una planta (DELETE)
+export const deletePlanta = async (numero) => {
   try {
     const response = await fetch(API_URL, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ codigo }),
+      body: JSON.stringify({ numero }),
     });
 
     if (!response.ok) {
@@ -88,7 +96,7 @@ export const deleteCamion = async (codigo) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error eliminando camión:", error);
+    console.error("Error eliminando planta:", error);
     throw error;
   }
 };

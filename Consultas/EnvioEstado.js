@@ -1,26 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Picker } from 'react-native';
-import { getUsuarios, createUsuario, updateUsuario, deleteUsuario } from '../api/UsuariosApi';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { getEstadosEnvio, createEstadoEnvio, updateEstadoEnvio, deleteEstadoEnvio } from '../api/EnvioEstadoApi';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-const Usuarios = () => {
-  const [usuariosData, setUsuariosData] = useState([]);
+const EnvioEstado = () => {
+  const [estadosData, setEstadosData] = useState([]);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isConsulting, setIsConsulting] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [newUsuario, setNewUsuario] = useState({
-    username: '',
-    password: '',
-    rol: 'chofer', // Valor por defecto
-    num_conductor: '',
+  const [newEstado, setNewEstado] = useState({
+    num_envio: '',
+    num_estado: '',
   });
 
   const fetchData = async () => {
     try {
-      const data = await getUsuarios();
-      setUsuariosData(data);
+      const data = await getEstadosEnvio();
+      setEstadosData(data);
     } catch (error) {
-      console.error('Error obteniendo datos de usuarios:', error);
+      console.error('Error obteniendo datos de estados de envío:', error);
+      alert('Error al cargar los estados de envío');
     }
   };
 
@@ -29,28 +28,34 @@ const Usuarios = () => {
   }, []);
 
   const handleRegisterOrUpdate = async () => {
-    if (editingIndex !== null) {
-      try {
-        await updateUsuario(newUsuario);
-        fetchData();
-        setEditingIndex(null);
-      } catch (error) {
-        console.error('Error actualizando usuario:', error);
+    try {
+      if (editingIndex !== null) {
+        await updateEstadoEnvio(newEstado.id, newEstado);
+        alert('Estado de envío actualizado correctamente');
+      } else {
+        await createEstadoEnvio(newEstado);
+        alert('Estado de envío registrado correctamente');
       }
-    } else {
-      try {
-        await createUsuario(newUsuario);
-        fetchData();
-      } catch (error) {
-        console.error('Error registrando usuario:', error);
-      }
+      fetchData();
+      setEditingIndex(null);
+      setNewEstado({ 
+        num_envio: '', 
+        num_estado: '' 
+      });
+      setIsRegistering(false);
+    } catch (error) {
+      console.error('Error:', error);
+      alert(`Error: ${error.message}`);
     }
-    setNewUsuario({ username: '', password: '', rol: 'chofer', num_conductor: '' });
-    setIsRegistering(false);
   };
 
   const handleEdit = (index) => {
-    setNewUsuario(usuariosData[index]);
+    const estadoToEdit = estadosData[index];
+    setNewEstado({
+      id: estadoToEdit.id,
+      num_envio: estadoToEdit.num_envio?.toString() || '',
+      num_estado: estadoToEdit.num_estado?.toString() || '',
+    });
     setEditingIndex(index);
     setIsRegistering(true);
     setIsConsulting(false);
@@ -58,11 +63,13 @@ const Usuarios = () => {
 
   const handleDelete = async (index) => {
     try {
-      const id = usuariosData[index].id;
-      await deleteUsuario(id);
+      const id = estadosData[index].id;
+      await deleteEstadoEnvio(id);
+      alert('Estado de envío eliminado correctamente');
       fetchData();
     } catch (error) {
-      console.error('Error eliminando usuario:', error);
+      console.error('Error eliminando estado de envío:', error);
+      alert(`Error al eliminar: ${error.message}`);
     }
   };
 
@@ -74,7 +81,7 @@ const Usuarios = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Gestión de Usuarios</Text>
+      <Text style={styles.title}>Gestión de Estados de Envío</Text>
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
@@ -82,7 +89,7 @@ const Usuarios = () => {
           onPress={handleConsult}
         >
           <Icon name="search" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.primaryButtonText}>Consultar Información</Text>
+          <Text style={styles.primaryButtonText}>Consultar Estados</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -91,33 +98,36 @@ const Usuarios = () => {
             setIsRegistering(true);
             setIsConsulting(false);
             setEditingIndex(null);
-            setNewUsuario({ username: '', password: '', rol: 'chofer', num_conductor: '' });
+            setNewEstado({ 
+              num_envio: '', 
+              num_estado: '' 
+            });
           }}
         >
-          <Icon name="user-plus" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.primaryButtonText}>Registrar Usuario</Text>
+          <Icon name="plus-circle" size={20} color="#fff" style={styles.buttonIcon} />
+          <Text style={styles.primaryButtonText}>Registrar Nuevo Estado</Text>
         </TouchableOpacity>
       </View>
 
       {isConsulting && (
         <View style={styles.infoContainer}>
-          <Text style={styles.subTitle}>Información de Usuarios</Text>
-          {usuariosData.map((usuario, index) => (
+          <Text style={styles.subTitle}>Historial de Estados</Text>
+          {estadosData.map((estado, index) => (
             <View key={index} style={styles.card}>
               <View style={styles.cardHeader}>
-                <Icon name="user" size={24} color="#005398" />
-                <Text style={styles.cardTitle}>{usuario.username}</Text>
+                <Icon name="history" size={24} color="#005398" />
+                <Text style={styles.cardTitle}>Registro #{estado.id}</Text>
               </View>
               
               <View style={styles.cardBody}>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>ID:</Text> {usuario.id}
+                  <Text style={styles.label}>N° Envío:</Text> {estado.num_envio}
                 </Text>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>Rol:</Text> {usuario.rol === 'admin' ? 'Administrador' : 'Chofer'}
+                  <Text style={styles.label}>Estado:</Text> {estado.num_estado}
                 </Text>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>Número Conductor:</Text> {usuario.num_conductor || 'N/A'}
+                  <Text style={styles.label}>Fecha:</Text> {new Date(estado.fecha).toLocaleString()}
                 </Text>
               </View>
 
@@ -127,14 +137,14 @@ const Usuarios = () => {
                   onPress={() => handleEdit(index)}
                 >
                   <Icon name="edit" size={16} color="#fff" />
-                  <Text style={styles.secondaryButtonText}>Editar</Text>
+                  <Text style={styles.secondaryButtonText}> Editar</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={[styles.secondaryButton, styles.deleteButton]} 
                   onPress={() => handleDelete(index)}
                 >
                   <Icon name="trash-alt" size={16} color="#fff" />
-                  <Text style={styles.secondaryButtonText}>Eliminar</Text>
+                  <Text style={styles.secondaryButtonText}> Eliminar</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -144,39 +154,22 @@ const Usuarios = () => {
 
       {isRegistering && (
         <View style={styles.form}>
-          <Text style={styles.subTitle}>{editingIndex !== null ? 'Editar Usuario' : 'Registrar Nuevo Usuario'}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            value={newUsuario.username}
-            onChangeText={(text) => setNewUsuario({ ...newUsuario, username: text })}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={newUsuario.password}
-            onChangeText={(text) => setNewUsuario({ ...newUsuario, password: text })}
-            secureTextEntry
-          />
+          <Text style={styles.subTitle}>
+            {editingIndex !== null ? 'Editar Estado' : 'Registrar Nuevo Estado'}
+          </Text>
           
-          <View style={styles.pickerContainer}>
-            <Text style={styles.pickerLabel}>Rol:</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={newUsuario.rol}
-                onValueChange={(itemValue) => setNewUsuario({ ...newUsuario, rol: itemValue })}
-              >
-                <Picker.Item label="Administrador" value="admin" />
-                <Picker.Item label="Chofer" value="chofer" />
-              </Picker>
-            </View>
-          </View>
-
           <TextInput
             style={styles.input}
-            placeholder="Número Conductor (opcional)"
-            value={newUsuario.num_conductor ? newUsuario.num_conductor.toString() : ''}
-            onChangeText={(text) => setNewUsuario({ ...newUsuario, num_conductor: text })}
+            placeholder="Número de Envío"
+            value={newEstado.num_envio}
+            onChangeText={(text) => setNewEstado({ ...newEstado, num_envio: text })}
+            keyboardType="numeric"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Número de Estado"
+            value={newEstado.num_estado}
+            onChangeText={(text) => setNewEstado({ ...newEstado, num_estado: text })}
             keyboardType="numeric"
           />
           
@@ -185,7 +178,7 @@ const Usuarios = () => {
             onPress={handleRegisterOrUpdate}
           >
             <Text style={styles.primaryButtonText}>
-              {editingIndex !== null ? 'Actualizar Usuario' : 'Registrar Usuario'}
+              {editingIndex !== null ? 'Actualizar Estado' : 'Registrar Estado'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -194,6 +187,7 @@ const Usuarios = () => {
   );
 };
 
+// Puedes reutilizar los mismos estilos del componente Camiones.js
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -308,22 +302,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
   },
-  pickerContainer: {
-    marginBottom: 15,
-  },
-  pickerLabel: {
-    fontSize: 16,
-    color: '#005398',
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  pickerWrapper: {
-    borderWidth: 1,
-    borderColor: '#D6EAF8',
-    borderRadius: 5,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
-  },
   subTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -333,4 +311,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Usuarios;
+export default EnvioEstado;

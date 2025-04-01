@@ -1,8 +1,8 @@
-//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/camiones.php";
-const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/camiones.php";
+//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/laboratorios.php";
+const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/laboratorios.php";
 
-// Obtener todos los camiones (GET)
-export const getCamiones = async () => {
+// Obtener todos los laboratorios (GET)
+export const getLaboratorios = async () => {
   try {
     const response = await fetch(API_URL, {
       method: "GET",
@@ -18,20 +18,20 @@ export const getCamiones = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error obteniendo camiones:", error);
+    console.error("Error obteniendo laboratorios:", error);
     throw error;
   }
 };
 
-// Crear un camión (POST)
-export const createCamion = async (camion) => {
+// Crear un laboratorio (POST)
+export const createLaboratorio = async (laboratorio) => {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(camion),
+      body: JSON.stringify(laboratorio),
     });
 
     if (!response.ok) {
@@ -41,20 +41,26 @@ export const createCamion = async (camion) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error creando camión:", error);
+    console.error("Error creando laboratorio:", error);
     throw error;
   }
 };
 
-// Actualizar un camión (PUT)
-export const updateCamion = async (codigo, camion) => {
+// Actualizar un laboratorio (PUT) - Solo contacto
+export const updateLaboratorio = async (codigo, laboratorio) => {
   try {
+    // Solo enviamos contacto para actualizar
+    const { contacto } = laboratorio;
+    
     const response = await fetch(API_URL, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...camion, codigo }),
+      body: JSON.stringify({ 
+        codigo,
+        contacto 
+      }),
     });
 
     if (!response.ok) {
@@ -65,13 +71,13 @@ export const updateCamion = async (codigo, camion) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error actualizando camión:", error);
+    console.error("Error actualizando laboratorio:", error);
     throw error;
   }
 };
 
-// Eliminar un camión (DELETE)
-export const deleteCamion = async (codigo) => {
+// Eliminar un laboratorio (DELETE)
+export const deleteLaboratorio = async (codigo) => {
   try {
     const response = await fetch(API_URL, {
       method: "DELETE",
@@ -88,7 +94,7 @@ export const deleteCamion = async (codigo) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error eliminando camión:", error);
+    console.error("Error eliminando laboratorio:", error);
     throw error;
   }
 };

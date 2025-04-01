@@ -1,31 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { getCamiones, createCamion, updateCamion, deleteCamion } from '../api/CamionesApi';
+import { getFarmaceuticas, createFarmaceutica, updateFarmaceutica, deleteFarmaceutica } from '../api/FarmaceuticasApi';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-const Camiones = () => {
-  const [camionesData, setCamionesData] = useState([]);
+const Farmaceuticas = () => {
+  const [farmaceuticasData, setFarmaceuticasData] = useState([]);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isConsulting, setIsConsulting] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [newCamion, setNewCamion] = useState({
+  const [newFarmaceutica, setNewFarmaceutica] = useState({
     codigo: '',
-    year: '',
-    MMA: '',
-    matricula: '',
-    estado: 'Disponible',
-    cod_modelo: '',
-    cod_marca: '',
+    nombre: '',
+    telefono: '',
+    correo: ''
   });
 
   const fetchData = async () => {
     try {
-      const data = await getCamiones();
-      setCamionesData(data);
+      const data = await getFarmaceuticas();
+      setFarmaceuticasData(data);
     } catch (error) {
-      console.error('Error obteniendo datos de camiones:', error);
-      alert('Error al cargar los camiones');
+      console.error('Error obteniendo datos de farmacéuticas:', error);
+      alert('Error al cargar las farmacéuticas');
     }
   };
 
@@ -36,23 +32,21 @@ const Camiones = () => {
   const handleRegisterOrUpdate = async () => {
     try {
       if (editingIndex !== null) {
-        await updateCamion(newCamion.codigo, newCamion);
-        alert('Camión actualizado correctamente');
+        // Solo enviamos código, teléfono y correo para actualizar
+        const { codigo, telefono, correo } = newFarmaceutica;
+        await updateFarmaceutica(codigo, { telefono, correo });
+        alert('Contacto de farmacéutica actualizado correctamente');
       } else {
-        const camionToCreate = { ...newCamion, estado: 'Disponible' };
-        await createCamion(camionToCreate);
-        alert('Camión registrado correctamente');
+        await createFarmaceutica(newFarmaceutica);
+        alert('Farmacéutica registrada correctamente');
       }
       fetchData();
       setEditingIndex(null);
-      setNewCamion({ 
-        codigo: '', 
-        year: '', 
-        MMA: '', 
-        matricula: '', 
-        estado: 'Disponible',
-        cod_modelo: '', 
-        cod_marca: '' 
+      setNewFarmaceutica({ 
+        codigo: '',
+        nombre: '',
+        telefono: '',
+        correo: ''
       });
       setIsRegistering(false);
     } catch (error) {
@@ -62,15 +56,11 @@ const Camiones = () => {
   };
 
   const handleEdit = (index) => {
-    const camionToEdit = camionesData[index];
-    setNewCamion({
-      codigo: camionToEdit.codigo?.toString() || '',
-      year: camionToEdit.year?.toString() || '',
-      MMA: camionToEdit.MMA?.toString() || '',
-      matricula: camionToEdit.matricula || '',
-      estado: camionToEdit.estado || 'Disponible',
-      cod_modelo: camionToEdit.cod_modelo?.toString() || '',
-      cod_marca: camionToEdit.cod_marca?.toString() || '',
+    const farmaceuticaToEdit = farmaceuticasData[index];
+    setNewFarmaceutica({
+      codigo: farmaceuticaToEdit.codigo?.toString() || '',
+      telefono: farmaceuticaToEdit.telefono || '',
+      correo: farmaceuticaToEdit.correo || ''
     });
     setEditingIndex(index);
     setIsRegistering(true);
@@ -79,12 +69,12 @@ const Camiones = () => {
 
   const handleDelete = async (index) => {
     try {
-      const codigo = camionesData[index].codigo;
-      await deleteCamion(codigo);
-      alert('Camión eliminado correctamente');
+      const codigo = farmaceuticasData[index].codigo;
+      await deleteFarmaceutica(codigo);
+      alert('Farmacéutica eliminada correctamente');
       fetchData();
     } catch (error) {
-      console.error('Error eliminando camión:', error);
+      console.error('Error eliminando farmacéutica:', error);
       alert(`Error al eliminar: ${error.message}`);
     }
   };
@@ -95,9 +85,15 @@ const Camiones = () => {
     setIsRegistering(false);
   };
 
+  const getFarmaceuticaInfo = (field) => {
+    if (editingIndex === null) return '';
+    const farmaceutica = farmaceuticasData.find(f => f.codigo.toString() === newFarmaceutica.codigo);
+    return farmaceutica ? farmaceutica[field] : '';
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Gestión de Camiones</Text>
+      <Text style={styles.title}>Gestión de Farmacéuticas</Text>
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
@@ -105,7 +101,7 @@ const Camiones = () => {
           onPress={handleConsult}
         >
           <Icon name="search" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.primaryButtonText}>Consultar Camiones</Text>
+          <Text style={styles.primaryButtonText}>Consultar Farmacéuticas</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -114,50 +110,38 @@ const Camiones = () => {
             setIsRegistering(true);
             setIsConsulting(false);
             setEditingIndex(null);
-            setNewCamion({ 
-              codigo: '', 
-              year: '', 
-              MMA: '', 
-              matricula: '', 
-              estado: 'Disponible',
-              cod_modelo: '', 
-              cod_marca: '' 
+            setNewFarmaceutica({ 
+              codigo: '',
+              nombre: '',
+              telefono: '',
+              correo: ''
             });
           }}
         >
           <Icon name="plus-circle" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.primaryButtonText}>Registrar Nuevo Camión</Text>
+          <Text style={styles.primaryButtonText}>Registrar Nueva Farmacéutica</Text>
         </TouchableOpacity>
       </View>
 
       {isConsulting && (
         <View style={styles.infoContainer}>
-          <Text style={styles.subTitle}>Información de Camiones</Text>
-          {camionesData.map((camion, index) => (
+          <Text style={styles.subTitle}>Información de Farmacéuticas</Text>
+          {farmaceuticasData.map((farmaceutica, index) => (
             <View key={index} style={styles.card}>
               <View style={styles.cardHeader}>
-                <Icon name="truck" size={24} color="#005398" />
-                <Text style={styles.cardTitle}>Camión #{camion.codigo}</Text>
+                <Icon name="prescription-bottle-alt" size={24} color="#005398" />
+                <Text style={styles.cardTitle}>Farmacéutica #{farmaceutica.codigo}</Text>
               </View>
               
               <View style={styles.cardBody}>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>Año:</Text> {camion.year}
+                  <Text style={styles.label}>Nombre:</Text> {farmaceutica.nombre}
                 </Text>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>MMA:</Text> {camion.MMA}
+                  <Text style={styles.label}>Teléfono:</Text> {farmaceutica.telefono}
                 </Text>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>Matrícula:</Text> {camion.matricula}
-                </Text>
-                <Text style={styles.cardText}>
-                  <Text style={styles.label}>Estado:</Text> {camion.estado}
-                </Text>
-                <Text style={styles.cardText}>
-                  <Text style={styles.label}>Modelo:</Text> {camion.cod_modelo}
-                </Text>
-                <Text style={styles.cardText}>
-                  <Text style={styles.label}>Marca:</Text> {camion.cod_marca}
+                  <Text style={styles.label}>Correo:</Text> {farmaceutica.correo}
                 </Text>
               </View>
 
@@ -167,7 +151,7 @@ const Camiones = () => {
                   onPress={() => handleEdit(index)}
                 >
                   <Icon name="edit" size={16} color="#fff" />
-                  <Text style={styles.secondaryButtonText}> Editar</Text>
+                  <Text style={styles.secondaryButtonText}> Editar Contacto</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={[styles.secondaryButton, styles.deleteButton]} 
@@ -182,86 +166,90 @@ const Camiones = () => {
         </View>
       )}
 
-      {isRegistering && (
+      {isRegistering && editingIndex === null && (
         <View style={styles.form}>
-          <Text style={styles.subTitle}>
-            {editingIndex !== null ? 'Editar Camión' : 'Registrar Nuevo Camión'}
-          </Text>
+          <Text style={styles.subTitle}>Registrar Nueva Farmacéutica</Text>
           
           <TextInput
             style={styles.input}
             placeholder="Código"
-            value={newCamion.codigo}
-            onChangeText={(text) => setNewCamion({ ...newCamion, codigo: text })}
+            value={newFarmaceutica.codigo}
+            onChangeText={(text) => setNewFarmaceutica({ ...newFarmaceutica, codigo: text })}
             keyboardType="numeric"
           />
           <TextInput
             style={styles.input}
-            placeholder="Año (ej. 2023)"
-            value={newCamion.year}
-            onChangeText={(text) => setNewCamion({ ...newCamion, year: text })}
-            keyboardType="numeric"
+            placeholder="Nombre"
+            value={newFarmaceutica.nombre}
+            onChangeText={(text) => setNewFarmaceutica({ ...newFarmaceutica, nombre: text })}
           />
           <TextInput
             style={styles.input}
-            placeholder="MMA (ej. 3500.50)"
-            value={newCamion.MMA}
-            onChangeText={(text) => setNewCamion({ ...newCamion, MMA: text })}
-            keyboardType="numeric"
+            placeholder="Teléfono"
+            value={newFarmaceutica.telefono}
+            onChangeText={(text) => setNewFarmaceutica({ ...newFarmaceutica, telefono: text })}
+            keyboardType="phone-pad"
           />
           <TextInput
             style={styles.input}
-            placeholder="Matrícula (ej. ABC123)"
-            value={newCamion.matricula}
-            onChangeText={(text) => setNewCamion({ ...newCamion, matricula: text })}
-          />
-          
-          {editingIndex !== null ? (
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={newCamion.estado}
-                onValueChange={(itemValue) => 
-                  setNewCamion({ ...newCamion, estado: itemValue })
-                }
-                style={styles.picker}
-              >
-                <Picker.Item label="Disponible" value="Disponible" />
-                <Picker.Item label="Asignado" value="Asignado" />
-                <Picker.Item label="En ruta" value="En ruta" />
-                <Picker.Item label="En mantenimiento" value="En mantenimiento" />
-              </Picker>
-            </View>
-          ) : (
-            <View style={styles.disabledInputContainer}>
-              <Text style={styles.disabledInputLabel}>Estado:</Text>
-              <View style={styles.disabledInput}>
-                <Text style={styles.disabledInputText}>Disponible</Text>
-              </View>
-            </View>
-          )}
-          
-          <TextInput
-            style={styles.input}
-            placeholder="Código Modelo"
-            value={newCamion.cod_modelo}
-            onChangeText={(text) => setNewCamion({ ...newCamion, cod_modelo: text })}
-            keyboardType="numeric"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Código Marca"
-            value={newCamion.cod_marca}
-            onChangeText={(text) => setNewCamion({ ...newCamion, cod_marca: text })}
-            keyboardType="numeric"
+            placeholder="Correo electrónico"
+            value={newFarmaceutica.correo}
+            onChangeText={(text) => setNewFarmaceutica({ ...newFarmaceutica, correo: text })}
+            keyboardType="email-address"
+            autoCapitalize="none"
           />
           
           <TouchableOpacity 
             style={styles.primaryButton} 
             onPress={handleRegisterOrUpdate}
           >
-            <Text style={styles.primaryButtonText}>
-              {editingIndex !== null ? 'Actualizar Camión' : 'Registrar Camión'}
-            </Text>
+            <Text style={styles.primaryButtonText}>Registrar Farmacéutica</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {isRegistering && editingIndex !== null && (
+        <View style={styles.form}>
+          <Text style={styles.subTitle}>Editar Contacto de Farmacéutica</Text>
+          
+          {/* Información no editable */}
+          <View style={styles.disabledInputContainer}>
+            <Text style={styles.disabledInputLabel}>Código:</Text>
+            <View style={styles.disabledInput}>
+              <Text style={styles.disabledInputText}>{newFarmaceutica.codigo}</Text>
+            </View>
+          </View>
+          
+          <View style={styles.disabledInputContainer}>
+            <Text style={styles.disabledInputLabel}>Nombre:</Text>
+            <View style={styles.disabledInput}>
+              <Text style={styles.disabledInputText}>{getFarmaceuticaInfo('nombre')}</Text>
+            </View>
+          </View>
+          
+          {/* Campos editables */}
+          <TextInput
+            style={styles.input}
+            placeholder="Teléfono"
+            value={newFarmaceutica.telefono}
+            onChangeText={(text) => setNewFarmaceutica({ ...newFarmaceutica, telefono: text })}
+            keyboardType="phone-pad"
+          />
+          
+          <TextInput
+            style={styles.input}
+            placeholder="Correo electrónico"
+            value={newFarmaceutica.correo}
+            onChangeText={(text) => setNewFarmaceutica({ ...newFarmaceutica, correo: text })}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          
+          <TouchableOpacity 
+            style={styles.primaryButton} 
+            onPress={handleRegisterOrUpdate}
+          >
+            <Text style={styles.primaryButtonText}>Actualizar Contacto</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -269,6 +257,7 @@ const Camiones = () => {
   );
 };
 
+// Reutiliza los mismos estilos del componente Sucursales
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -410,17 +399,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
   },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#D6EAF8',
-    borderRadius: 5,
-    marginBottom: 15,
-    overflow: 'hidden',
-  },
-  picker: {
-    width: '100%',
-    backgroundColor: '#fff',
-  },
 });
 
-export default Camiones;
+export default Farmaceuticas;

@@ -1,8 +1,10 @@
-//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/camiones.php";
-const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/camiones.php";
+//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/sucursales.php";
+const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/sucursales.php";
 
-// Obtener todos los camiones (GET)
-export const getCamiones = async () => {
+
+
+// Obtener todas las sucursales (GET)
+export const getSucursales = async () => {
   try {
     const response = await fetch(API_URL, {
       method: "GET",
@@ -18,20 +20,20 @@ export const getCamiones = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error obteniendo camiones:", error);
+    console.error("Error obteniendo sucursales:", error);
     throw error;
   }
 };
 
-// Crear un camión (POST)
-export const createCamion = async (camion) => {
+// Crear una sucursal (POST)
+export const createSucursal = async (sucursal) => {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(camion),
+      body: JSON.stringify(sucursal),
     });
 
     if (!response.ok) {
@@ -41,20 +43,26 @@ export const createCamion = async (camion) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error creando camión:", error);
+    console.error("Error creando sucursal:", error);
     throw error;
   }
 };
 
-// Actualizar un camión (PUT)
-export const updateCamion = async (codigo, camion) => {
+export const updateSucursal = async (codigo, sucursal) => {
   try {
+    // Solo enviamos teléfono y correo para actualizar
+    const { telefono, correo } = sucursal;
+    
     const response = await fetch(API_URL, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...camion, codigo }),
+      body: JSON.stringify({ 
+        codigo,
+        telefono,
+        correo 
+      }),
     });
 
     if (!response.ok) {
@@ -65,13 +73,13 @@ export const updateCamion = async (codigo, camion) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error actualizando camión:", error);
+    console.error("Error actualizando sucursal:", error);
     throw error;
   }
 };
 
-// Eliminar un camión (DELETE)
-export const deleteCamion = async (codigo) => {
+// Eliminar una sucursal (DELETE)
+export const deleteSucursal = async (codigo) => {
   try {
     const response = await fetch(API_URL, {
       method: "DELETE",
@@ -88,7 +96,7 @@ export const deleteCamion = async (codigo) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error eliminando camión:", error);
+    console.error("Error eliminando sucursal:", error);
     throw error;
   }
 };

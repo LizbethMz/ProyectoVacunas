@@ -1,34 +1,54 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { getTemperaturas } from '../api/TemperaturaApi';
 
-const data = [
-  { id: '1', fecha: '25/08/2019', hora: '10:50 AM', temperatura: '36.4°C (97.5°F)', camion: 'Camión A', ruta: 'Ruta 1' },
-  { id: '2', fecha: '26/08/2019', hora: '09:30 AM', temperatura: '36.7°C (98.0°F)', camion: 'Camión B', ruta: 'Ruta 2' },
-  { id: '3', fecha: '26/08/2019', hora: '08:24 PM', temperatura: '37.0°C (98.6°F)', camion: 'Camión A', ruta: 'Ruta 1' },
-  { id: '4', fecha: '27/08/2019', hora: '07:53 AM', temperatura: '37.3°C (99.1°F)', camion: 'Camión C', ruta: 'Ruta 3' },
-];
+const Temperatura = () => {
+  const [temperaturasData, setTemperaturasData] = useState([]);
 
-export default function RegistroTemperatura() {
-  const renderRow = ({ item }) => (
-    <View style={styles.row}>
-      <Text style={styles.date}>{item.fecha} - {item.hora}</Text>
-      <Text style={styles.temperature}>{item.temperatura}</Text>
-      <Text style={styles.details}>Camión: {item.camion} | Ruta: {item.ruta}</Text>
-    </View>
-  );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getTemperaturas();
+        setTemperaturasData(data);
+      } catch (error) {
+        console.error('Error obteniendo datos de temperatura:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Función para formatear la fecha (opcional)
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('es-ES', options);
+  };
 
   return (
     <View style={styles.screenContainer}>
       <Text style={styles.header}>Registro de Temperaturas</Text>
-      <FlatList
-        data={data}
-        keyExtractor={(item) => item.id}
-        renderItem={renderRow}
-        contentContainerStyle={styles.list}
-      />
+      
+      <ScrollView contentContainerStyle={styles.list}>
+        {temperaturasData.length > 0 ? (
+          temperaturasData.map((registro, index) => (
+            <View key={index} style={styles.row}>
+              <Text style={styles.date}>{formatDate(registro.fecha)} a las {registro.hora}</Text>
+              <Text style={[
+                styles.temperature,
+                { color: registro.temperatura > 8 ? '#E74C3C' : registro.temperatura < 2 ? '#3498DB' : '#1ABC9C' }
+              ]}>
+                {registro.temperatura}°C
+              </Text>
+              <Text style={styles.details}>Envío: #{registro.num_envio}</Text>
+              <Text style={styles.details}>Registro: #{registro.numero}</Text>
+            </View>
+          ))
+        ) : (
+          <Text style={styles.details}>No hay registros de temperatura disponibles</Text>
+        )}
+      </ScrollView>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   screenContainer: {
@@ -64,7 +84,6 @@ const styles = StyleSheet.create({
   temperature: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1ABC9C',
     marginTop: 5,
   },
   details: {
@@ -73,3 +92,5 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 });
+
+export default Temperatura;

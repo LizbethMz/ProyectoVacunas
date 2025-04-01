@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Picker } from 'react-native';
-import { getUsuarios, createUsuario, updateUsuario, deleteUsuario } from '../api/UsuariosApi';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { getLaboratorios, createLaboratorio, updateLaboratorio, deleteLaboratorio } from '../api/LaboratoriosApi';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-const Usuarios = () => {
-  const [usuariosData, setUsuariosData] = useState([]);
+const Laboratorios = () => {
+  const [laboratoriosData, setLaboratoriosData] = useState([]);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isConsulting, setIsConsulting] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [newUsuario, setNewUsuario] = useState({
-    username: '',
-    password: '',
-    rol: 'chofer', // Valor por defecto
-    num_conductor: '',
+  const [newLaboratorio, setNewLaboratorio] = useState({
+    codigo: '',
+    nombre: '',
+    contacto: ''
   });
 
   const fetchData = async () => {
     try {
-      const data = await getUsuarios();
-      setUsuariosData(data);
+      const data = await getLaboratorios();
+      setLaboratoriosData(data);
     } catch (error) {
-      console.error('Error obteniendo datos de usuarios:', error);
+      console.error('Error obteniendo datos de laboratorios:', error);
+      alert('Error al cargar los laboratorios');
     }
   };
 
@@ -29,28 +29,36 @@ const Usuarios = () => {
   }, []);
 
   const handleRegisterOrUpdate = async () => {
-    if (editingIndex !== null) {
-      try {
-        await updateUsuario(newUsuario);
-        fetchData();
-        setEditingIndex(null);
-      } catch (error) {
-        console.error('Error actualizando usuario:', error);
+    try {
+      if (editingIndex !== null) {
+        // Solo enviamos código y contacto para actualizar
+        const { codigo, contacto } = newLaboratorio;
+        await updateLaboratorio(codigo, { contacto });
+        alert('Contacto de laboratorio actualizado correctamente');
+      } else {
+        await createLaboratorio(newLaboratorio);
+        alert('Laboratorio registrado correctamente');
       }
-    } else {
-      try {
-        await createUsuario(newUsuario);
-        fetchData();
-      } catch (error) {
-        console.error('Error registrando usuario:', error);
-      }
+      fetchData();
+      setEditingIndex(null);
+      setNewLaboratorio({ 
+        codigo: '',
+        nombre: '',
+        contacto: ''
+      });
+      setIsRegistering(false);
+    } catch (error) {
+      console.error('Error:', error);
+      alert(`Error: ${error.message}`);
     }
-    setNewUsuario({ username: '', password: '', rol: 'chofer', num_conductor: '' });
-    setIsRegistering(false);
   };
 
   const handleEdit = (index) => {
-    setNewUsuario(usuariosData[index]);
+    const laboratorioToEdit = laboratoriosData[index];
+    setNewLaboratorio({
+      codigo: laboratorioToEdit.codigo?.toString() || '',
+      contacto: laboratorioToEdit.contacto || ''
+    });
     setEditingIndex(index);
     setIsRegistering(true);
     setIsConsulting(false);
@@ -58,11 +66,13 @@ const Usuarios = () => {
 
   const handleDelete = async (index) => {
     try {
-      const id = usuariosData[index].id;
-      await deleteUsuario(id);
+      const codigo = laboratoriosData[index].codigo;
+      await deleteLaboratorio(codigo);
+      alert('Laboratorio eliminado correctamente');
       fetchData();
     } catch (error) {
-      console.error('Error eliminando usuario:', error);
+      console.error('Error eliminando laboratorio:', error);
+      alert(`Error al eliminar: ${error.message}`);
     }
   };
 
@@ -72,9 +82,15 @@ const Usuarios = () => {
     setIsRegistering(false);
   };
 
+  const getLaboratorioInfo = (field) => {
+    if (editingIndex === null) return '';
+    const laboratorio = laboratoriosData.find(l => l.codigo.toString() === newLaboratorio.codigo);
+    return laboratorio ? laboratorio[field] : '';
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Gestión de Usuarios</Text>
+      <Text style={styles.title}>Gestión de Laboratorios</Text>
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
@@ -82,7 +98,7 @@ const Usuarios = () => {
           onPress={handleConsult}
         >
           <Icon name="search" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.primaryButtonText}>Consultar Información</Text>
+          <Text style={styles.primaryButtonText}>Consultar Laboratorios</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -91,33 +107,34 @@ const Usuarios = () => {
             setIsRegistering(true);
             setIsConsulting(false);
             setEditingIndex(null);
-            setNewUsuario({ username: '', password: '', rol: 'chofer', num_conductor: '' });
+            setNewLaboratorio({ 
+              codigo: '',
+              nombre: '',
+              contacto: ''
+            });
           }}
         >
-          <Icon name="user-plus" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.primaryButtonText}>Registrar Usuario</Text>
+          <Icon name="plus-circle" size={20} color="#fff" style={styles.buttonIcon} />
+          <Text style={styles.primaryButtonText}>Registrar Nuevo Laboratorio</Text>
         </TouchableOpacity>
       </View>
 
       {isConsulting && (
         <View style={styles.infoContainer}>
-          <Text style={styles.subTitle}>Información de Usuarios</Text>
-          {usuariosData.map((usuario, index) => (
+          <Text style={styles.subTitle}>Información de Laboratorios</Text>
+          {laboratoriosData.map((laboratorio, index) => (
             <View key={index} style={styles.card}>
               <View style={styles.cardHeader}>
-                <Icon name="user" size={24} color="#005398" />
-                <Text style={styles.cardTitle}>{usuario.username}</Text>
+                <Icon name="flask" size={24} color="#005398" />
+                <Text style={styles.cardTitle}>Laboratorio #{laboratorio.codigo}</Text>
               </View>
               
               <View style={styles.cardBody}>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>ID:</Text> {usuario.id}
+                  <Text style={styles.label}>Nombre:</Text> {laboratorio.nombre}
                 </Text>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>Rol:</Text> {usuario.rol === 'admin' ? 'Administrador' : 'Chofer'}
-                </Text>
-                <Text style={styles.cardText}>
-                  <Text style={styles.label}>Número Conductor:</Text> {usuario.num_conductor || 'N/A'}
+                  <Text style={styles.label}>Contacto:</Text> {laboratorio.contacto}
                 </Text>
               </View>
 
@@ -127,14 +144,14 @@ const Usuarios = () => {
                   onPress={() => handleEdit(index)}
                 >
                   <Icon name="edit" size={16} color="#fff" />
-                  <Text style={styles.secondaryButtonText}>Editar</Text>
+                  <Text style={styles.secondaryButtonText}> Editar Contacto</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={[styles.secondaryButton, styles.deleteButton]} 
                   onPress={() => handleDelete(index)}
                 >
                   <Icon name="trash-alt" size={16} color="#fff" />
-                  <Text style={styles.secondaryButtonText}>Eliminar</Text>
+                  <Text style={styles.secondaryButtonText}> Eliminar</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -142,51 +159,71 @@ const Usuarios = () => {
         </View>
       )}
 
-      {isRegistering && (
+      {isRegistering && editingIndex === null && (
         <View style={styles.form}>
-          <Text style={styles.subTitle}>{editingIndex !== null ? 'Editar Usuario' : 'Registrar Nuevo Usuario'}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            value={newUsuario.username}
-            onChangeText={(text) => setNewUsuario({ ...newUsuario, username: text })}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={newUsuario.password}
-            onChangeText={(text) => setNewUsuario({ ...newUsuario, password: text })}
-            secureTextEntry
-          />
+          <Text style={styles.subTitle}>Registrar Nuevo Laboratorio</Text>
           
-          <View style={styles.pickerContainer}>
-            <Text style={styles.pickerLabel}>Rol:</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={newUsuario.rol}
-                onValueChange={(itemValue) => setNewUsuario({ ...newUsuario, rol: itemValue })}
-              >
-                <Picker.Item label="Administrador" value="admin" />
-                <Picker.Item label="Chofer" value="chofer" />
-              </Picker>
-            </View>
-          </View>
-
           <TextInput
             style={styles.input}
-            placeholder="Número Conductor (opcional)"
-            value={newUsuario.num_conductor ? newUsuario.num_conductor.toString() : ''}
-            onChangeText={(text) => setNewUsuario({ ...newUsuario, num_conductor: text })}
+            placeholder="Código"
+            value={newLaboratorio.codigo}
+            onChangeText={(text) => setNewLaboratorio({ ...newLaboratorio, codigo: text })}
             keyboardType="numeric"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre"
+            value={newLaboratorio.nombre}
+            onChangeText={(text) => setNewLaboratorio({ ...newLaboratorio, nombre: text })}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Contacto"
+            value={newLaboratorio.contacto}
+            onChangeText={(text) => setNewLaboratorio({ ...newLaboratorio, contacto: text })}
           />
           
           <TouchableOpacity 
             style={styles.primaryButton} 
             onPress={handleRegisterOrUpdate}
           >
-            <Text style={styles.primaryButtonText}>
-              {editingIndex !== null ? 'Actualizar Usuario' : 'Registrar Usuario'}
-            </Text>
+            <Text style={styles.primaryButtonText}>Registrar Laboratorio</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {isRegistering && editingIndex !== null && (
+        <View style={styles.form}>
+          <Text style={styles.subTitle}>Editar Contacto de Laboratorio</Text>
+          
+          {/* Información no editable */}
+          <View style={styles.disabledInputContainer}>
+            <Text style={styles.disabledInputLabel}>Código:</Text>
+            <View style={styles.disabledInput}>
+              <Text style={styles.disabledInputText}>{newLaboratorio.codigo}</Text>
+            </View>
+          </View>
+          
+          <View style={styles.disabledInputContainer}>
+            <Text style={styles.disabledInputLabel}>Nombre:</Text>
+            <View style={styles.disabledInput}>
+              <Text style={styles.disabledInputText}>{getLaboratorioInfo('nombre')}</Text>
+            </View>
+          </View>
+          
+          {/* Campo editable */}
+          <TextInput
+            style={styles.input}
+            placeholder="Contacto"
+            value={newLaboratorio.contacto}
+            onChangeText={(text) => setNewLaboratorio({ ...newLaboratorio, contacto: text })}
+          />
+          
+          <TouchableOpacity 
+            style={styles.primaryButton} 
+            onPress={handleRegisterOrUpdate}
+          >
+            <Text style={styles.primaryButtonText}>Actualizar Contacto</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -194,6 +231,7 @@ const Usuarios = () => {
   );
 };
 
+// Reutiliza los mismos estilos de los componentes anteriores
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -308,21 +346,25 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
   },
-  pickerContainer: {
+  disabledInputContainer: {
     marginBottom: 15,
   },
-  pickerLabel: {
+  disabledInputLabel: {
     fontSize: 16,
     color: '#005398',
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  pickerWrapper: {
+  disabledInput: {
+    backgroundColor: '#f0f0f0',
     borderWidth: 1,
     borderColor: '#D6EAF8',
+    padding: 12,
     borderRadius: 5,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
+  },
+  disabledInputText: {
+    fontSize: 16,
+    color: '#555',
   },
   subTitle: {
     fontSize: 20,
@@ -333,4 +375,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Usuarios;
+export default Laboratorios;

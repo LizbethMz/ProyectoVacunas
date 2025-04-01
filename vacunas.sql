@@ -1,3 +1,4 @@
+-- Active: 1732292347716@@127.0.0.1@3306@vacunas
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
@@ -71,6 +72,31 @@ CREATE TABLE `conductor` (
   `apellidoP` varchar(50) NOT NULL DEFAULT '',
   `apellidoM` varchar(50) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- MODIFICACIONES:
+-- Conductores
+INSERT INTO `conductor` (`numero`, `nombre_pila`, `apellidoP`, `apellidoM`) VALUES
+(101, 'Juan', 'García', 'López'),
+(102, 'María', 'Rodríguez', 'Sánchez'),
+(103, 'Carlos', 'Martínez', 'Gómez'),
+(104, 'Ana', 'Hernández', 'Pérez'),
+(105, 'Luis', 'Díaz', 'Fernández');
+
+-- Camiones
+INSERT INTO `camion` (`codigo`, `year`, `MMA`, `matricula`, `estado`, `cod_modelo`, `cod_marca`) VALUES
+(201, 2020, 3500.00, 'ABC-1234', 'disponible', 1, 1),
+(202, 2019, 4000.50, 'DEF-5678', 'disponible', 2, 1),
+(203, 2021, 3800.00, 'GHI-9012', 'disponible', 1, 2),
+(204, 2018, 4200.75, 'JKL-3456', 'disponible', 3, 3),
+(205, 2022, 3600.00, 'MNO-7890', 'disponible', 2, 2);
+
+-- Algunas asignaciones iniciales
+INSERT INTO `camion_conductor` (`cod_camion`, `num_conductor`) VALUES
+(201, 101),
+(202, 102);
+
+-- Actualizar estado de camiones asignados
+UPDATE `camion` SET `estado` = 'asignado' WHERE `codigo` IN (201, 202);
 
 -- --------------------------------------------------------
 
@@ -221,6 +247,23 @@ CREATE TABLE `registro_carga` (
   `codigo` int(11) NOT NULL,
   `carga_util` decimal(10,2) NOT NULL DEFAULT 0.00,
   `cod_camion` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Primero eliminar la tabla existente si es necesario
+DROP TABLE IF EXISTS `registro_carga`;
+
+-- Crear la tabla modificada
+CREATE TABLE `registro_carga` (
+  `codigo` int(11) NOT NULL AUTO_INCREMENT,
+  `carga_util` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `cod_camion` int(11) NOT NULL,
+  `num_envio` int(11) NOT NULL,
+  `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`codigo`),
+  KEY `cod_camion` (`cod_camion`),
+  KEY `num_envio` (`num_envio`),
+  CONSTRAINT `registro_carga_ibfk_1` FOREIGN KEY (`cod_camion`) REFERENCES `camion` (`codigo`),
+  CONSTRAINT `registro_carga_ibfk_2` FOREIGN KEY (`num_envio`) REFERENCES `envio` (`numero`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -671,3 +714,10 @@ INSERT INTO ruta (numero, f_salida, f_llegada, h_salida, h_llegada, num_envio, n
 (3, '2025-04-12', '2025-04-12', '06:00:00', '08:30:00', 3, 3, 3),
 (4, '2025-04-13', '2025-04-13', '09:00:00', '10:30:00', 4, 4, 4),
 (5, '2025-04-14', '2025-04-14', '07:30:00', '11:00:00', 5, 5, 5);
+
+INSERT INTO `registro_carga` (`carga_util`, `cod_camion`, `num_envio`) VALUES
+(12000.50, 1, 1),
+(15000.75, 2, 2),
+(11000.25, 3, 3),
+(18000.00, 4, 4),
+(13000.30, 5, 5);

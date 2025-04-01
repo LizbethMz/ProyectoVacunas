@@ -5,7 +5,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator, DrawerItemList } from '@react-navigation/drawer';
 import Temperatura from './Consultas/Temperatura';
-import Choferes from './Consultas/Conductores';
 import Camiones from './Consultas/Camiones';
 import Envios from './Consultas/Envios';
 import Incidentes from './Consultas/Incidentes';

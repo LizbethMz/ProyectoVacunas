@@ -1,26 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Picker } from 'react-native';
-import { getUsuarios, createUsuario, updateUsuario, deleteUsuario } from '../api/UsuariosApi';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { getMarcas, createMarca, updateMarca, deleteMarca, checkCodigoMarcaExistente } from '../api/MarcasApi';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import Mensaje from './Mensaje';
 
-const Usuarios = () => {
-  const [usuariosData, setUsuariosData] = useState([]);
+const Marcas = () => {
+  const [marcasData, setMarcasData] = useState([]);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isConsulting, setIsConsulting] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [newUsuario, setNewUsuario] = useState({
-    username: '',
-    password: '',
-    rol: 'chofer', // Valor por defecto
-    num_conductor: '',
+  const [newMarca, setNewMarca] = useState({
+    codigo: '',
+    nombre: '',
   });
+  const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
+
+  const mostrarMensaje = (texto, tipo = 'exito') => {
+    setMensaje({ texto, tipo });
+    setTimeout(() => setMensaje({ texto: '', tipo: '' }), 5000);
+  };
 
   const fetchData = async () => {
     try {
-      const data = await getUsuarios();
-      setUsuariosData(data);
+      const data = await getMarcas();
+      setMarcasData(data);
     } catch (error) {
-      console.error('Error obteniendo datos de usuarios:', error);
+      console.error('Error obteniendo datos de marcas:', error);
+      mostrarMensaje('Error al cargar las marcas', 'error');
     }
   };
 
@@ -29,28 +35,49 @@ const Usuarios = () => {
   }, []);
 
   const handleRegisterOrUpdate = async () => {
-    if (editingIndex !== null) {
-      try {
-        await updateUsuario(newUsuario);
-        fetchData();
+    try {
+      // Validar campos vacíos
+      if (!newMarca.codigo || !newMarca.nombre) {
+        mostrarMensaje('Todos los campos son requeridos', 'error');
+        return;
+      }
+
+      // Validar formato numérico
+      const codigo = parseInt(newMarca.codigo);
+      if (isNaN(codigo)) {
+        mostrarMensaje('El código debe ser un valor numérico', 'error');
+        return;
+      }
+
+      // Solo verificar si es nuevo registro (no en edición)
+      if (editingIndex === null) {
+        const existe = await checkCodigoMarcaExistente(codigo);
+        if (existe) {
+          mostrarMensaje('El código de marca ya está registrado', 'error');
+          return;
+        }
+      }
+
+      if (editingIndex !== null) {
+        await updateMarca(newMarca);
+        mostrarMensaje('Marca actualizada exitosamente', 'exito');
         setEditingIndex(null);
-      } catch (error) {
-        console.error('Error actualizando usuario:', error);
+      } else {
+        await createMarca({ ...newMarca, codigo });
+        mostrarMensaje('Marca creada exitosamente', 'exito');
       }
-    } else {
-      try {
-        await createUsuario(newUsuario);
-        fetchData();
-      } catch (error) {
-        console.error('Error registrando usuario:', error);
-      }
+
+      fetchData();
+      setNewMarca({ codigo: '', nombre: '' });
+      setIsRegistering(false);
+    } catch (error) {
+      console.error('Error:', error);
+      mostrarMensaje(error.message || 'Ocurrió un error al procesar la solicitud', 'error');
     }
-    setNewUsuario({ username: '', password: '', rol: 'chofer', num_conductor: '' });
-    setIsRegistering(false);
   };
 
   const handleEdit = (index) => {
-    setNewUsuario(usuariosData[index]);
+    setNewMarca(marcasData[index]);
     setEditingIndex(index);
     setIsRegistering(true);
     setIsConsulting(false);
@@ -58,11 +85,13 @@ const Usuarios = () => {
 
   const handleDelete = async (index) => {
     try {
-      const id = usuariosData[index].id;
-      await deleteUsuario(id);
+      const codigo = marcasData[index].codigo;
+      await deleteMarca(codigo);
+      mostrarMensaje('Marca eliminada exitosamente', 'exito');
       fetchData();
     } catch (error) {
-      console.error('Error eliminando usuario:', error);
+      console.error('Error eliminando marca:', error);
+      mostrarMensaje('Error al eliminar marca', 'error');
     }
   };
 
@@ -74,7 +103,9 @@ const Usuarios = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Gestión de Usuarios</Text>
+      <Text style={styles.title}>Gestión de Marcas</Text>
+
+      <Mensaje texto={mensaje.texto} tipo={mensaje.tipo} />
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
@@ -82,7 +113,7 @@ const Usuarios = () => {
           onPress={handleConsult}
         >
           <Icon name="search" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.primaryButtonText}>Consultar Información</Text>
+          <Text style={styles.primaryButtonText}>Consultar Marcas</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -91,50 +122,44 @@ const Usuarios = () => {
             setIsRegistering(true);
             setIsConsulting(false);
             setEditingIndex(null);
-            setNewUsuario({ username: '', password: '', rol: 'chofer', num_conductor: '' });
+            setNewMarca({ codigo: '', nombre: '' });
           }}
         >
-          <Icon name="user-plus" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.primaryButtonText}>Registrar Usuario</Text>
+          <Icon name="plus" size={20} color="#fff" style={styles.buttonIcon} />
+          <Text style={styles.primaryButtonText}>Registrar Nueva Marca</Text>
         </TouchableOpacity>
       </View>
 
       {isConsulting && (
         <View style={styles.infoContainer}>
-          <Text style={styles.subTitle}>Información de Usuarios</Text>
-          {usuariosData.map((usuario, index) => (
+          <Text style={styles.subTitle}>Información de Marcas</Text>
+          {marcasData.map((marca, index) => (
             <View key={index} style={styles.card}>
               <View style={styles.cardHeader}>
-                <Icon name="user" size={24} color="#005398" />
-                <Text style={styles.cardTitle}>{usuario.username}</Text>
+                <Icon name="tag" size={24} color="#005398" />
+                <Text style={styles.cardTitle}>Marca #{marca.codigo}</Text>
               </View>
-              
+
               <View style={styles.cardBody}>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>ID:</Text> {usuario.id}
-                </Text>
-                <Text style={styles.cardText}>
-                  <Text style={styles.label}>Rol:</Text> {usuario.rol === 'admin' ? 'Administrador' : 'Chofer'}
-                </Text>
-                <Text style={styles.cardText}>
-                  <Text style={styles.label}>Número Conductor:</Text> {usuario.num_conductor || 'N/A'}
+                  <Text style={styles.label}>Nombre:</Text> {marca.nombre}
                 </Text>
               </View>
 
               <View style={styles.cardFooter}>
-                <TouchableOpacity 
-                  style={styles.secondaryButton} 
+                <TouchableOpacity
+                  style={styles.secondaryButton}
                   onPress={() => handleEdit(index)}
                 >
                   <Icon name="edit" size={16} color="#fff" />
-                  <Text style={styles.secondaryButtonText}>Editar</Text>
+                  <Text style={styles.secondaryButtonText}> Editar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                  style={[styles.secondaryButton, styles.deleteButton]} 
+                <TouchableOpacity
+                  style={[styles.secondaryButton, styles.deleteButton]}
                   onPress={() => handleDelete(index)}
                 >
                   <Icon name="trash-alt" size={16} color="#fff" />
-                  <Text style={styles.secondaryButtonText}>Eliminar</Text>
+                  <Text style={styles.secondaryButtonText}> Eliminar</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -144,48 +169,31 @@ const Usuarios = () => {
 
       {isRegistering && (
         <View style={styles.form}>
-          <Text style={styles.subTitle}>{editingIndex !== null ? 'Editar Usuario' : 'Registrar Nuevo Usuario'}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            value={newUsuario.username}
-            onChangeText={(text) => setNewUsuario({ ...newUsuario, username: text })}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={newUsuario.password}
-            onChangeText={(text) => setNewUsuario({ ...newUsuario, password: text })}
-            secureTextEntry
-          />
-          
-          <View style={styles.pickerContainer}>
-            <Text style={styles.pickerLabel}>Rol:</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={newUsuario.rol}
-                onValueChange={(itemValue) => setNewUsuario({ ...newUsuario, rol: itemValue })}
-              >
-                <Picker.Item label="Administrador" value="admin" />
-                <Picker.Item label="Chofer" value="chofer" />
-              </Picker>
-            </View>
-          </View>
+          <Text style={styles.subTitle}>
+            {editingIndex !== null ? 'Editar Marca' : 'Registrar Nueva Marca'}
+          </Text>
 
           <TextInput
-            style={styles.input}
-            placeholder="Número Conductor (opcional)"
-            value={newUsuario.num_conductor ? newUsuario.num_conductor.toString() : ''}
-            onChangeText={(text) => setNewUsuario({ ...newUsuario, num_conductor: text })}
+            style={[styles.input, editingIndex !== null && styles.disabledInput]}
+            placeholder="Código"
+            value={newMarca.codigo}
+            onChangeText={(text) => editingIndex === null && setNewMarca({ ...newMarca, codigo: text })}
             keyboardType="numeric"
+            editable={editingIndex === null}
           />
-          
-          <TouchableOpacity 
-            style={styles.primaryButton} 
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre"
+            value={newMarca.nombre}
+            onChangeText={(text) => setNewMarca({ ...newMarca, nombre: text })}
+          />
+
+          <TouchableOpacity
+            style={styles.primaryButton}
             onPress={handleRegisterOrUpdate}
           >
             <Text style={styles.primaryButtonText}>
-              {editingIndex !== null ? 'Actualizar Usuario' : 'Registrar Usuario'}
+              {editingIndex !== null ? 'Actualizar Marca' : 'Registrar Marca'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -308,22 +316,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
   },
-  pickerContainer: {
-    marginBottom: 15,
-  },
-  pickerLabel: {
-    fontSize: 16,
-    color: '#005398',
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  pickerWrapper: {
-    borderWidth: 1,
-    borderColor: '#D6EAF8',
-    borderRadius: 5,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
-  },
   subTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -331,6 +323,10 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
   },
+  disabledInput: {
+    backgroundColor: '#f5f5f5',
+    color: '#888',
+  },
 });
 
-export default Usuarios;
+export default Marcas;

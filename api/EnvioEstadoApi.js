@@ -1,8 +1,7 @@
-//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/camiones.php";
-const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/camiones.php";
+const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/envio_estado.php";
 
-// Obtener todos los camiones (GET)
-export const getCamiones = async () => {
+// Obtener todos los estados de envío (GET)
+export const getEstadosEnvio = async () => {
   try {
     const response = await fetch(API_URL, {
       method: "GET",
@@ -18,20 +17,20 @@ export const getCamiones = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error obteniendo camiones:", error);
+    console.error("Error obteniendo estados de envío:", error);
     throw error;
   }
 };
 
-// Crear un camión (POST)
-export const createCamion = async (camion) => {
+// Crear un nuevo estado de envío (POST)
+export const createEstadoEnvio = async (estadoEnvio) => {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(camion),
+      body: JSON.stringify(estadoEnvio),
     });
 
     if (!response.ok) {
@@ -41,20 +40,20 @@ export const createCamion = async (camion) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error creando camión:", error);
+    console.error("Error creando estado de envío:", error);
     throw error;
   }
 };
 
-// Actualizar un camión (PUT)
-export const updateCamion = async (codigo, camion) => {
+// Actualizar un estado de envío (PUT)
+export const updateEstadoEnvio = async (id, estadoEnvio) => {
   try {
     const response = await fetch(API_URL, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...camion, codigo }),
+      body: JSON.stringify({ ...estadoEnvio, id }),
     });
 
     if (!response.ok) {
@@ -65,20 +64,20 @@ export const updateCamion = async (codigo, camion) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error actualizando camión:", error);
+    console.error("Error actualizando estado de envío:", error);
     throw error;
   }
 };
 
-// Eliminar un camión (DELETE)
-export const deleteCamion = async (codigo) => {
+// Eliminar un estado de envío (DELETE)
+export const deleteEstadoEnvio = async (id) => {
   try {
     const response = await fetch(API_URL, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ codigo }),
+      body: JSON.stringify({ id }),
     });
 
     if (!response.ok) {
@@ -88,7 +87,7 @@ export const deleteCamion = async (codigo) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error eliminando camión:", error);
+    console.error("Error eliminando estado de envío:", error);
     throw error;
   }
 };

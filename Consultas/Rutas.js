@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { getRutas, createRuta, updateRuta, deleteRuta } from '../api/RutasApi';
+import { getCiudades } from '../api/CiudadesApi';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 const Rutas = () => {
   const [rutasData, setRutasData] = useState([]);
+  const [ciudadesData, setCiudadesData] = useState([]);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isConsulting, setIsConsulting] = useState(false);
+  const [isViewingCities, setIsViewingCities] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [newRuta, setNewRuta] = useState({
     numero: '',
+    nombre: '',
     f_salida: '',
     f_llegada: '',
     h_salida: '',
     h_llegada: '',
-    num_envio: '',
     num_planta: '',
     cod_sucursal: '',
   });
 
-  const fetchData = async () => {
+  const fetchRutas = async () => {
     try {
       const data = await getRutas();
       setRutasData(data);
@@ -27,15 +31,25 @@ const Rutas = () => {
     }
   };
 
+  const fetchCiudades = async () => {
+    try {
+      const data = await getCiudades();
+      setCiudadesData(data);
+    } catch (error) {
+      console.error('Error obteniendo datos de ciudades:', error);
+    }
+  };
+
   useEffect(() => {
-    fetchData();
+    fetchRutas();
+    fetchCiudades();
   }, []);
 
   const handleRegisterOrUpdate = async () => {
     if (editingIndex !== null) {
       try {
         await updateRuta(newRuta);
-        fetchData();
+        fetchRutas();
         setEditingIndex(null);
       } catch (error) {
         console.error('Error actualizando ruta:', error);
@@ -43,18 +57,18 @@ const Rutas = () => {
     } else {
       try {
         await createRuta(newRuta);
-        fetchData();
+        fetchRutas();
       } catch (error) {
         console.error('Error registrando ruta:', error);
       }
     }
     setNewRuta({
       numero: '',
+      nombre: '',
       f_salida: '',
       f_llegada: '',
       h_salida: '',
       h_llegada: '',
-      num_envio: '',
       num_planta: '',
       cod_sucursal: '',
     });
@@ -66,79 +80,137 @@ const Rutas = () => {
     setEditingIndex(index);
     setIsRegistering(true);
     setIsConsulting(false);
+    setIsViewingCities(false);
   };
 
   const handleDelete = async (index) => {
     try {
       const numero = rutasData[index].numero;
       await deleteRuta(numero);
-      fetchData();
+      fetchRutas();
     } catch (error) {
       console.error('Error eliminando ruta:', error);
     }
   };
 
   const handleConsult = () => {
-    fetchData();
+    fetchRutas();
     setIsConsulting(true);
     setIsRegistering(false);
+    setIsViewingCities(false);
   };
+
+  const handleViewCities = () => {
+    fetchCiudades();
+    setIsViewingCities(true);
+    setIsConsulting(false);
+    setIsRegistering(false);
+  };
+
+  const getRutaStatus = (f_salida, f_llegada) => {
+    const hoy = new Date();
+    const salida = new Date(f_salida);
+    const llegada = new Date(f_llegada);
+    
+    if (hoy < salida) return '#3498DB'; // Azul: Pendiente
+    if (hoy >= salida && hoy <= llegada) return '#2ECC71'; // Verde: En curso
+    return '#E74C3C'; // Rojo: Finalizado
+  };
+
+  const renderLockedFieldInfo = () => (
+    <View style={styles.lockedInfo}>
+      <Icon name="info-circle" size={14} color="#666" />
+      <Text style={styles.lockedInfoText}>Este campo no se puede editar</Text>
+    </View>
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Gestión de Rutas</Text>
 
-      <TouchableOpacity style={styles.button} onPress={handleConsult}>
-        <Text style={styles.buttonText}>Consultar Información</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={handleConsult}
+        >
+          <Icon name="search" size={20} color="#fff" style={styles.buttonIcon} />
+          <Text style={styles.primaryButtonText}>Consultar Rutas</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          setIsRegistering(true);
-          setIsConsulting(false);
-          setEditingIndex(null);
-        }}
-      >
-        <Text style={styles.buttonText}>Registrar Ruta</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={() => {
+            setIsRegistering(true);
+            setIsConsulting(false);
+            setIsViewingCities(false);
+            setEditingIndex(null);
+          }}
+        >
+          <Icon name="route" size={20} color="#fff" style={styles.buttonIcon} />
+          <Text style={styles.primaryButtonText}>Registrar Nueva Ruta</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={handleViewCities}
+        >
+          <Icon name="city" size={20} color="#fff" style={styles.buttonIcon} />
+          <Text style={styles.primaryButtonText}>Ver Ciudades</Text>
+        </TouchableOpacity>
+      </View>
 
       {isConsulting && (
         <View style={styles.infoContainer}>
           <Text style={styles.subTitle}>Información de Rutas</Text>
           {rutasData.map((ruta, index) => (
             <View key={index} style={styles.card}>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Número:</Text> {ruta.numero}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Fecha Salida:</Text> {ruta.f_salida}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Fecha Llegada:</Text> {ruta.f_llegada}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Hora Salida:</Text> {ruta.h_salida}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Hora Llegada:</Text> {ruta.h_llegada}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Número Envío:</Text> {ruta.num_envio}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Número Planta:</Text> {ruta.num_planta}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Código Sucursal:</Text> {ruta.cod_sucursal}
-              </Text>
+              <View style={styles.cardHeader}>
+                <Icon name="route" size={24} color="#005398" />
+                <Text style={styles.cardTitle}>Ruta #{ruta.numero} - {ruta.nombre}</Text>
+                <View style={[styles.statusBadge, { backgroundColor: getRutaStatus(ruta.f_salida, ruta.f_llegada) }]} />
+              </View>
+              
+              <View style={styles.cardBody}>
+                <View style={styles.infoRow}>
+                  <Icon name="calendar-alt" size={16} color="#005398" />
+                  <Text style={styles.cardText}>
+                    <Text style={styles.label}> Salida:</Text> {ruta.f_salida} {ruta.h_salida}
+                  </Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <Icon name="calendar-check" size={16} color="#005398" />
+                  <Text style={styles.cardText}>
+                    <Text style={styles.label}> Llegada:</Text> {ruta.f_llegada} {ruta.h_llegada}
+                  </Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <Icon name="industry" size={16} color="#005398" />
+                  <Text style={styles.cardText}>
+                    <Text style={styles.label}> Planta:</Text> {ruta.num_planta}
+                  </Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <Icon name="store" size={16} color="#005398" />
+                  <Text style={styles.cardText}>
+                    <Text style={styles.label}> Sucursal:</Text> {ruta.cod_sucursal}
+                  </Text>
+                </View>
+              </View>
 
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(index)}>
-                  <Text style={styles.buttonText}>Editar</Text>
+              <View style={styles.cardFooter}>
+                <TouchableOpacity 
+                  style={styles.secondaryButton} 
+                  onPress={() => handleEdit(index)}
+                >
+                  <Icon name="edit" size={16} color="#fff" />
+                  <Text style={styles.secondaryButtonText}> Editar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(index)}>
-                  <Text style={styles.buttonText}>Eliminar</Text>
+                <TouchableOpacity 
+                  style={[styles.secondaryButton, styles.deleteButton]} 
+                  onPress={() => handleDelete(index)}
+                >
+                  <Icon name="trash-alt" size={16} color="#fff" />
+                  <Text style={styles.secondaryButtonText}> Eliminar</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -148,13 +220,28 @@ const Rutas = () => {
 
       {isRegistering && (
         <View style={styles.form}>
-          <Text style={styles.subTitle}>{editingIndex !== null ? 'Editar Ruta' : 'Registrar Nueva Ruta'}</Text>
+          <Text style={styles.subTitle}>
+            {editingIndex !== null ? 'Editar Ruta' : 'Registrar Nueva Ruta'}
+          </Text>
+          
+          {/* Número - Bloqueado en edición */}
+          <View>
+            <TextInput
+              style={[styles.input, editingIndex !== null && styles.disabledInput]}
+              placeholder="Número"
+              value={newRuta.numero}
+              onChangeText={(text) => setNewRuta({ ...newRuta, numero: text })}
+              keyboardType="numeric"
+              editable={editingIndex === null}
+            />
+            {editingIndex !== null && renderLockedFieldInfo()}
+          </View>
+          
           <TextInput
             style={styles.input}
-            placeholder="Número"
-            value={newRuta.numero}
-            onChangeText={(text) => setNewRuta({ ...newRuta, numero: text })}
-            keyboardType="numeric"
+            placeholder="Nombre (ej. TEC-TIJ)"
+            value={newRuta.nombre}
+            onChangeText={(text) => setNewRuta({ ...newRuta, nombre: text })}
           />
           <TextInput
             style={styles.input}
@@ -180,28 +267,63 @@ const Rutas = () => {
             value={newRuta.h_llegada}
             onChangeText={(text) => setNewRuta({ ...newRuta, h_llegada: text })}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Número Envío"
-            value={newRuta.num_envio}
-            onChangeText={(text) => setNewRuta({ ...newRuta, num_envio: text })}
-            keyboardType="numeric"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Número Planta"
-            value={newRuta.num_planta}
-            onChangeText={(text) => setNewRuta({ ...newRuta, num_planta: text })}
-            keyboardType="numeric"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Código Sucursal"
-            value={newRuta.cod_sucursal}
-            onChangeText={(text) => setNewRuta({ ...newRuta, cod_sucursal: text })}
-            keyboardType="numeric"
-          />
-          <Button title={editingIndex !== null ? 'Actualizar' : 'Registrar'} onPress={handleRegisterOrUpdate} />
+          
+          {/* Número Planta - Bloqueado en edición */}
+          <View>
+            <TextInput
+              style={[styles.input, editingIndex !== null && styles.disabledInput]}
+              placeholder="Número Planta"
+              value={newRuta.num_planta}
+              onChangeText={(text) => setNewRuta({ ...newRuta, num_planta: text })}
+              keyboardType="numeric"
+              editable={editingIndex === null}
+            />
+            {editingIndex !== null && renderLockedFieldInfo()}
+          </View>
+          
+          {/* Código Sucursal - Bloqueado en edición */}
+          <View>
+            <TextInput
+              style={[styles.input, editingIndex !== null && styles.disabledInput]}
+              placeholder="Código Sucursal"
+              value={newRuta.cod_sucursal}
+              onChangeText={(text) => setNewRuta({ ...newRuta, cod_sucursal: text })}
+              keyboardType="numeric"
+              editable={editingIndex === null}
+            />
+            {editingIndex !== null && renderLockedFieldInfo()}
+          </View>
+          
+          <TouchableOpacity 
+            style={styles.primaryButton} 
+            onPress={handleRegisterOrUpdate}
+          >
+            <Text style={styles.primaryButtonText}>
+              {editingIndex !== null ? 'Actualizar Ruta' : 'Registrar Ruta'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {isViewingCities && (
+        <View style={styles.infoContainer}>
+          <Text style={styles.subTitle}>Listado de Ciudades</Text>
+          {ciudadesData.map((ciudad, index) => (
+            <View key={index} style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Icon name="city" size={24} color="#005398" />
+                <Text style={styles.cardTitle}>{ciudad.nombre}</Text>
+              </View>
+              <View style={styles.cardBody}>
+                <View style={styles.infoRow}>
+                  <Icon name="hashtag" size={16} color="#005398" />
+                  <Text style={styles.cardText}>
+                    <Text style={styles.label}> Código:</Text> {ciudad.codigo}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ))}
         </View>
       )}
     </ScrollView>
@@ -212,7 +334,6 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
     padding: 20,
   },
   title: {
@@ -220,77 +341,144 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#005398',
     marginBottom: 20,
+    textAlign: 'center',
+  },
+  buttonsContainer: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  primaryButton: {
+    backgroundColor: '#005398',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  primaryButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  buttonIcon: {
+    marginRight: 10,
+  },
+  secondaryButton: {
+    backgroundColor: '#3498DB',
+    padding: 10,
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  secondaryButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  deleteButton: {
+    backgroundColor: '#E74C3C',
+  },
+  card: {
+    backgroundColor: '#EAF2F8',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 15,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#D6EAF8',
+    paddingBottom: 10,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#005398',
+    marginLeft: 10,
+    flex: 1,
+  },
+  statusBadge: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  cardBody: {
+    marginBottom: 10,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  cardText: {
+    fontSize: 16,
+    color: '#34495E',
+    marginBottom: 5,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  label: {
+    fontWeight: 'bold',
+    color: '#005398',
+  },
+  form: {
+    backgroundColor: '#EAF2F8',
+    borderRadius: 10,
+    padding: 20,
+    marginTop: 20,
+  },
+  input: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#D6EAF8',
+    padding: 12,
+    borderRadius: 5,
+    marginBottom: 15,
+    fontSize: 16,
+  },
+  disabledInput: {
+    backgroundColor: '#f0f0f0',
+    color: '#666',
   },
   subTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#005398',
     marginBottom: 15,
+    textAlign: 'center',
   },
-  card: {
-    backgroundColor: 'rgb(230, 242, 255)',
-    padding: 15,
-    borderRadius: 10,
-    width: '90%',
-    marginBottom: 15,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+  infoContainer: {
+    width: '100%',
   },
-  cardText: {
-    fontSize: 16,
-    color: '#005398',
-  },
-  label: {
-    fontWeight: 'bold',
-  },
-  button: {
-    backgroundColor: 'rgb(0, 64, 128)',
-    padding: 15,
-    borderRadius: 5,
-    marginTop: 10,
-    alignItems: 'center',
-    width: '90%',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  buttonContainer: {
+  lockedInfo: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-  },
-  editButton: {
-    backgroundColor: '#F0A500',
-    padding: 10,
-    borderRadius: 5,
-    flex: 1,
-    marginRight: 5,
-  },
-  deleteButton: {
-    backgroundColor: '#D7263D',
-    padding: 10,
-    borderRadius: 5,
-    flex: 1,
-    marginLeft: 5,
-  },
-  form: {
-    width: '90%',
-    padding: 20,
-    backgroundColor: 'rgb(230, 242, 255)',
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: -10,
     marginBottom: 15,
-    backgroundColor: '#fff',
+  },
+  lockedInfoText: {
+    fontSize: 12,
+    color: '#666',
+    marginLeft: 5,
   },
 });
 

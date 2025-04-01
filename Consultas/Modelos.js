@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { getConductores, createConductor, updateConductor, deleteConductor, checkNumeroConductorExistente } from '../api/ConductoresApi';
+import { getModelos, createModelo, updateModelo, deleteModelo, checkCodigoModeloExistente, getMarcas } from '../api/ModelosApi';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Mensaje from './Mensaje';
 
-const Conductores = () => {
-  const [conductoresData, setConductoresData] = useState([]);
+const Modelos = () => {
+  const [modelosData, setModelosData] = useState([]);
+  const [marcasData, setMarcasData] = useState([]);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isConsulting, setIsConsulting] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [newConductor, setNewConductor] = useState({
-    numero: '',
-    nombre_pila: '',
-    apellidoP: '',
-    apellidoM: '',
+  const [newModelo, setNewModelo] = useState({
+    codigo: '',
+    nombre: '',
+    year: '',
+    cod_marca: ''
   });
   const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
 
@@ -24,53 +25,73 @@ const Conductores = () => {
 
   const fetchData = async () => {
     try {
-      const data = await getConductores();
-      setConductoresData(data);
+      const data = await getModelos();
+      setModelosData(data);
     } catch (error) {
-      console.error('Error obteniendo datos de conductores:', error);
-      mostrarMensaje('Error al cargar los conductores', 'error');
+      console.error('Error obteniendo datos de modelos:', error);
+      mostrarMensaje('Error al cargar los modelos', 'error');
+    }
+  };
+
+  const fetchMarcas = async () => {
+    try {
+      const data = await getMarcas();
+      setMarcasData(data);
+    } catch (error) {
+      console.error('Error obteniendo marcas:', error);
     }
   };
 
   useEffect(() => {
     fetchData();
+    fetchMarcas();
   }, []);
 
   const handleRegisterOrUpdate = async () => {
     try {
       // Validar campos vacíos
-      if (!newConductor.numero || !newConductor.nombre_pila || !newConductor.apellidoP || !newConductor.apellidoM) {
+      if (!newModelo.codigo || !newModelo.nombre || !newModelo.year || !newModelo.cod_marca) {
         mostrarMensaje('Todos los campos son requeridos', 'error');
         return;
       }
 
       // Validar formato numérico
-      const numero = parseInt(newConductor.numero);
-      if (isNaN(numero)) {
-        mostrarMensaje('El número debe ser un valor numérico', 'error');
+      const codigo = parseInt(newModelo.codigo);
+      const year = parseInt(newModelo.year);
+      const cod_marca = parseInt(newModelo.cod_marca);
+      
+      if (isNaN(codigo) || isNaN(year) || isNaN(cod_marca)) {
+        mostrarMensaje('Los campos código, año y código de marca deben ser numéricos', 'error');
         return;
       }
 
       // Solo verificar si es nuevo registro (no en edición)
       if (editingIndex === null) {
-        const existe = await checkNumeroConductorExistente(numero);
+        const existe = await checkCodigoModeloExistente(codigo);
         if (existe) {
-          mostrarMensaje('El número de conductor ya está registrado', 'error');
+          mostrarMensaje('El código de modelo ya está registrado', 'error');
           return;
         }
       }
 
+      const modeloData = {
+        codigo,
+        nombre: newModelo.nombre,
+        year,
+        cod_marca
+      };
+
       if (editingIndex !== null) {
-        await updateConductor(newConductor);
-        mostrarMensaje('Conductor actualizado exitosamente', 'exito');
+        await updateModelo(modeloData);
+        mostrarMensaje('Modelo actualizado exitosamente', 'exito');
         setEditingIndex(null);
       } else {
-        await createConductor({ ...newConductor, numero });
-        mostrarMensaje('Conductor creado exitosamente', 'exito');
+        await createModelo(modeloData);
+        mostrarMensaje('Modelo creado exitosamente', 'exito');
       }
 
       fetchData();
-      setNewConductor({ numero: '', nombre_pila: '', apellidoP: '', apellidoM: '' });
+      setNewModelo({ codigo: '', nombre: '', year: '', cod_marca: '' });
       setIsRegistering(false);
     } catch (error) {
       console.error('Error:', error);
@@ -79,7 +100,7 @@ const Conductores = () => {
   };
 
   const handleEdit = (index) => {
-    setNewConductor(conductoresData[index]);
+    setNewModelo(modelosData[index]);
     setEditingIndex(index);
     setIsRegistering(true);
     setIsConsulting(false);
@@ -87,13 +108,13 @@ const Conductores = () => {
 
   const handleDelete = async (index) => {
     try {
-      const numero = conductoresData[index].numero;
-      await deleteConductor(numero);
-      mostrarMensaje('Conductor eliminado exitosamente', 'exito');
+      const codigo = modelosData[index].codigo;
+      await deleteModelo(codigo);
+      mostrarMensaje('Modelo eliminado exitosamente', 'exito');
       fetchData();
     } catch (error) {
-      console.error('Error eliminando conductor:', error);
-      mostrarMensaje('Error al eliminar conductor', 'error');
+      console.error('Error eliminando modelo:', error);
+      mostrarMensaje('Error al eliminar modelo', 'error');
     }
   };
 
@@ -105,7 +126,7 @@ const Conductores = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Gestión de Conductores</Text>
+      <Text style={styles.title}>Gestión de Modelos</Text>
 
       <Mensaje texto={mensaje.texto} tipo={mensaje.tipo} />
 
@@ -115,7 +136,7 @@ const Conductores = () => {
           onPress={handleConsult}
         >
           <Icon name="search" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.primaryButtonText}>Consultar Conductores</Text>
+          <Text style={styles.primaryButtonText}>Consultar Modelos</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -124,33 +145,33 @@ const Conductores = () => {
             setIsRegistering(true);
             setIsConsulting(false);
             setEditingIndex(null);
-            setNewConductor({ numero: '', nombre_pila: '', apellidoP: '', apellidoM: '' });
+            setNewModelo({ codigo: '', nombre: '', year: '', cod_marca: '' });
           }}
         >
-          <Icon name="user-plus" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.primaryButtonText}>Registrar Nuevo Conductor</Text>
+          <Icon name="plus-circle" size={20} color="#fff" style={styles.buttonIcon} />
+          <Text style={styles.primaryButtonText}>Registrar Nuevo Modelo</Text>
         </TouchableOpacity>
       </View>
 
       {isConsulting && (
         <View style={styles.infoContainer}>
-          <Text style={styles.subTitle}>Información de Conductores</Text>
-          {conductoresData.map((conductor, index) => (
+          <Text style={styles.subTitle}>Información de Modelos</Text>
+          {modelosData.map((modelo, index) => (
             <View key={index} style={styles.card}>
               <View style={styles.cardHeader}>
-                <Icon name="user-tie" size={24} color="#005398" />
-                <Text style={styles.cardTitle}>Conductor #{conductor.numero}</Text>
+                <Icon name="car" size={24} color="#005398" />
+                <Text style={styles.cardTitle}>Modelo #{modelo.codigo}</Text>
               </View>
 
               <View style={styles.cardBody}>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>Nombre:</Text> {conductor.nombre_pila}
+                  <Text style={styles.label}>Nombre:</Text> {modelo.nombre}
                 </Text>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>Apellido Paterno:</Text> {conductor.apellidoP}
+                  <Text style={styles.label}>Año:</Text> {modelo.year}
                 </Text>
                 <Text style={styles.cardText}>
-                  <Text style={styles.label}>Apellido Materno:</Text> {conductor.apellidoM}
+                  <Text style={styles.label}>Código de Marca:</Text> {modelo.cod_marca}
                 </Text>
               </View>
 
@@ -178,34 +199,36 @@ const Conductores = () => {
       {isRegistering && (
         <View style={styles.form}>
           <Text style={styles.subTitle}>
-            {editingIndex !== null ? 'Editar Conductor' : 'Registrar Nuevo Conductor'}
+            {editingIndex !== null ? 'Editar Modelo' : 'Registrar Nuevo Modelo'}
           </Text>
 
           <TextInput
             style={[styles.input, editingIndex !== null && styles.disabledInput]}
-            placeholder="Número"
-            value={newConductor.numero}
-            onChangeText={(text) => editingIndex === null && setNewConductor({ ...newConductor, numero: text })}
+            placeholder="Código"
+            value={newModelo.codigo}
+            onChangeText={(text) => editingIndex === null && setNewModelo({ ...newModelo, codigo: text })}
             keyboardType="numeric"
             editable={editingIndex === null}
           />
           <TextInput
             style={styles.input}
             placeholder="Nombre"
-            value={newConductor.nombre_pila}
-            onChangeText={(text) => setNewConductor({ ...newConductor, nombre_pila: text })}
+            value={newModelo.nombre}
+            onChangeText={(text) => setNewModelo({ ...newModelo, nombre: text })}
           />
           <TextInput
             style={styles.input}
-            placeholder="Apellido Paterno"
-            value={newConductor.apellidoP}
-            onChangeText={(text) => setNewConductor({ ...newConductor, apellidoP: text })}
+            placeholder="Año"
+            value={newModelo.year}
+            onChangeText={(text) => setNewModelo({ ...newModelo, year: text })}
+            keyboardType="numeric"
           />
           <TextInput
             style={styles.input}
-            placeholder="Apellido Materno"
-            value={newConductor.apellidoM}
-            onChangeText={(text) => setNewConductor({ ...newConductor, apellidoM: text })}
+            placeholder="Código de Marca"
+            value={newModelo.cod_marca}
+            onChangeText={(text) => setNewModelo({ ...newModelo, cod_marca: text })}
+            keyboardType="numeric"
           />
 
           <TouchableOpacity
@@ -213,7 +236,7 @@ const Conductores = () => {
             onPress={handleRegisterOrUpdate}
           >
             <Text style={styles.primaryButtonText}>
-              {editingIndex !== null ? 'Actualizar Conductor' : 'Registrar Conductor'}
+              {editingIndex !== null ? 'Actualizar Modelo' : 'Registrar Modelo'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -349,4 +372,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Conductores;
+export default Modelos;

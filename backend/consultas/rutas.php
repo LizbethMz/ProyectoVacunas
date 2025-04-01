@@ -29,7 +29,7 @@ switch ($method) {
 function getRutas() {
     try {
         $connection = Conexion::get_connection();
-        $result = $connection->query("SELECT numero, f_salida, f_llegada, h_salida, h_llegada, num_envio, num_planta, cod_sucursal FROM ruta ORDER BY numero ASC");
+        $result = $connection->query("SELECT numero, nombre, f_salida, f_llegada, h_salida, h_llegada, num_planta, cod_sucursal FROM ruta ORDER BY numero ASC");
         $rutas = $result->fetch_all(MYSQLI_ASSOC);
         echo json_encode($rutas);
         $connection->close();
@@ -43,8 +43,8 @@ function createRuta() {
         $data = json_decode(file_get_contents("php://input"));
         $connection = Conexion::get_connection();
 
-        $query = $connection->prepare("INSERT INTO ruta (numero, f_salida, f_llegada, h_salida, h_llegada, num_envio, num_planta, cod_sucursal) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $query->bind_param("issssiii", $data->numero, $data->f_salida, $data->f_llegada, $data->h_salida, $data->h_llegada, $data->num_envio, $data->num_planta, $data->cod_sucursal);
+        $query = $connection->prepare("INSERT INTO ruta (numero, nombre, f_salida, f_llegada, h_salida, h_llegada, num_planta, cod_sucursal) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $query->bind_param("isssssii", $data->numero, $data->nombre, $data->f_salida, $data->f_llegada, $data->h_salida, $data->h_llegada, $data->num_planta, $data->cod_sucursal);
         $query->execute();
 
         echo json_encode(["message" => "Ruta creada"]);
@@ -59,8 +59,8 @@ function updateRuta() {
         $data = json_decode(file_get_contents("php://input"));
         $connection = Conexion::get_connection();
 
-        $query = $connection->prepare("UPDATE ruta SET f_salida = ?, f_llegada = ?, h_salida = ?, h_llegada = ?, num_envio = ?, num_planta = ?, cod_sucursal = ? WHERE numero = ?");
-        $query->bind_param("ssssiiii", $data->f_salida, $data->f_llegada, $data->h_salida, $data->h_llegada, $data->num_envio, $data->num_planta, $data->cod_sucursal, $data->numero);
+        $query = $connection->prepare("UPDATE ruta SET nombre = ?, f_salida = ?, f_llegada = ?, h_salida = ?, h_llegada = ?, num_planta = ?, cod_sucursal = ? WHERE numero = ?");
+        $query->bind_param("ssssssii", $data->nombre, $data->f_salida, $data->f_llegada, $data->h_salida, $data->h_llegada, $data->num_planta, $data->cod_sucursal, $data->numero);
         $query->execute();
 
         echo json_encode(["message" => "Ruta actualizada"]);

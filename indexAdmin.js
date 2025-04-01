@@ -11,10 +11,67 @@ import Envios from './Consultas/Envios';
 import Incidentes from './Consultas/Incidentes';
 import Rutas from './Consultas/Rutas';
 import Usuarios from './Consultas/Usuarios';
+import Sucursales from './Consultas/Sucursales';
+import Farmaceuticas from './Consultas/Farmaceuticas';
+import Plantas from './Consultas/Plantas';
+import Laboratorios from './Consultas/Laboratorios';
+import AsignacionConductores from './Consultas/AsignacionConductores';
+import Paquetes from './Consultas/Paquetes';
+import RegistroCarga from './Consultas/RegistroCarga';
+import Marcas from './Consultas/Marcas';
+import Modelos from './Consultas/Modelos';
+import EnvioEstado from './Consultas/EnvioEstado';
+import Mensaje from './Consultas/Mensaje';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+
+function TransporteSubMenu({ navigation }) {
+  return (
+    <ScrollView contentContainerStyle={styles.menuContainer}>
+      <View style={styles.subMenuHeader}>
+        <Text style={styles.menuTitle}>Transporte</Text>
+      </View>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Camiones')}
+      >
+        <Icon name="truck" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Camiones</Text>
+        <Text style={styles.menuCardText}>Administra la flota de camiones</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('RegistroCarga')}
+      >
+        <Icon name="weight" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Registro de Carga</Text>
+        <Text style={styles.menuCardText}>Gestiona los registros de carga</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Marcas')}
+      >
+        <Icon name="tag" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Marcas</Text>
+        <Text style={styles.menuCardText}>Administra las marcas de camiones</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Modelos')}
+      >
+        <Icon name="car-alt" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Modelos</Text>
+        <Text style={styles.menuCardText}>Gestiona los modelos de camiones</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
 
 function GestionUsuariosMenu({ navigation }) {
   return (
@@ -42,10 +99,139 @@ function GestionUsuariosMenu({ navigation }) {
   );
 }
 
+function GestionTransporteMenu({ navigation }) {
+  return (
+    <ScrollView contentContainerStyle={styles.menuContainer}>
+      <Text style={styles.menuTitle}>Gestión de Transporte</Text>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('TransporteSubMenu')}
+      >
+        <Icon name="truck" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Camiones</Text>
+        <Text style={styles.menuCardText}>Administra la flota de camiones</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('AsignacionConductores')}
+      >
+        <Icon name="user-tag" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Asignación de Conductores</Text>
+        <Text style={styles.menuCardText}>Asigna conductores a camiones</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Rutas')}
+      >
+        <Icon name="route" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Rutas</Text>
+        <Text style={styles.menuCardText}>Administra las rutas de transporte</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Incidentes')}
+      >
+        <Icon name="exclamation-triangle" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Incidentes</Text>
+        <Text style={styles.menuCardText}>Registra y gestiona incidentes</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
+
+function GestionEnviosMenu({ navigation }) {
+  return (
+    <ScrollView contentContainerStyle={styles.menuContainer}>
+      <Text style={styles.menuTitle}>Gestión de Envíos</Text>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Envios')}
+      >
+        <Icon name="shipping-fast" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Envios</Text>
+        <Text style={styles.menuCardText}>Administra los envíos programados</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Paquetes')}
+      >
+        <Icon name="box" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Paquetes</Text>
+        <Text style={styles.menuCardText}>Gestiona los paquetes de los envíos</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('EnvioEstado')}
+      >
+        <Icon name="check-square" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Estados del Envio</Text>
+        <Text style={styles.menuCardText}>Gestiona los estados de los envíos</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
+
+function GestionFarmaciasMenu({ navigation }) {
+  return (
+    <ScrollView contentContainerStyle={styles.menuContainer}>
+      <Text style={styles.menuTitle}>Gestión de Farmacias</Text>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Sucursales')}
+      >
+        <Icon name="store" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Sucursales</Text>
+        <Text style={styles.menuCardText}>Administra las sucursales del sistema</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Farmaceuticas')}
+      >
+        <Icon name="prescription-bottle-alt" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Farmacéuticas</Text>
+        <Text style={styles.menuCardText}>Administra las farmacéuticas asociadas</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
+
+function GestionPlantasLaboratoriosMenu({ navigation }) {
+  return (
+    <ScrollView contentContainerStyle={styles.menuContainer}>
+      <Text style={styles.menuTitle}>Gestión de Plantas y Laboratorios</Text>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Plantas')}
+      >
+        <Icon name="leaf" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Plantas</Text>
+        <Text style={styles.menuCardText}>Administra las plantas de producción</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('Laboratorios')}
+      >
+        <Icon name="flask" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Laboratorios</Text>
+        <Text style={styles.menuCardText}>Administra los laboratorios asociados</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
 
 function HomeScreen({ navigation }) {
   return (
-
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Dashboard General</Text>
 
@@ -135,26 +321,6 @@ function HomeScreen({ navigation }) {
   );
 }
 
-
-function SettingsScreen() {
-  return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <Text style={styles.title}>Configuración</Text>
-      <View style={styles.bottomButtons}>
-        <TouchableOpacity style={styles.settingBox}>
-          <Icon name="user-cog" size={24} color="#005398" style={styles.settingIcon} />
-          <Text style={styles.settingText}>Configurar Perfil</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.settingBox}>
-          <Icon name="sign-out-alt" size={24} color="#005398" style={styles.settingIcon} />
-          <Text style={styles.settingText}>Cerrar Sesión</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
-  );
-}
-
-
 function CustomDrawerContent(props) {
   return (
     <View style={styles.drawerContainer}>
@@ -166,6 +332,20 @@ function CustomDrawerContent(props) {
         itemStyle={styles.drawerItem}
         iconContainerStyle={styles.drawerIconContainer}
       />
+      <TouchableOpacity
+        style={styles.logoutButtonBlue}
+        onPress={() => {
+          props.navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }]
+          });
+        }}
+      >
+        <View style={styles.logoutButtonContent}>
+          <Icon name="sign-out-alt" size={20} color="#003B75" />
+          <Text style={styles.logoutButtonTextBlue}>Cerrar sesión</Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -229,6 +409,70 @@ function MainDrawer() {
         }}
       />
       <Drawer.Screen
+        name="GestionTransporte"
+        component={GestionTransporteMenu}
+        options={{
+          title: 'Transporte',
+          drawerIcon: ({ color }) => (
+            <View style={styles.drawerIconContainer}>
+              <Icon name="truck" size={20} color={color} />
+            </View>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="TransporteSubMenu"
+        component={TransporteSubMenu}
+        options={{
+          title: 'Transporte',
+          drawerItemStyle: { display: 'none' },
+          headerLeft: ({ tintColor }) => (
+            <TouchableOpacity 
+              onPress={() => navigation.goBack()} 
+              style={styles.headerMenuButton}
+            >
+              <Icon name="arrow-left" size={24} color={tintColor} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="GestionEnvios"
+        component={GestionEnviosMenu}
+        options={{
+          title: 'Gestión de Envíos',
+          drawerIcon: ({ color }) => (
+            <View style={styles.drawerIconContainer}>
+              <Icon name="shipping-fast" size={20} color={color} />
+            </View>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="GestionFarmacias"
+        component={GestionFarmaciasMenu}
+        options={{
+          title: 'Gestión de Farmacias',
+          drawerIcon: ({ color }) => (
+            <View style={styles.drawerIconContainer}>
+              <Icon name="clinic-medical" size={20} color={color} />
+            </View>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="GestionPlantasLaboratorios"
+        component={GestionPlantasLaboratoriosMenu}
+        options={{
+          title: 'Plantas y Laboratorios',
+          drawerIcon: ({ color }) => (
+            <View style={styles.drawerIconContainer}>
+              <Icon name="industry" size={20} color={color} />
+            </View>
+          ),
+        }}
+      />
+      <Drawer.Screen
         name="Usuarios"
         component={Usuarios}
         options={{
@@ -241,74 +485,124 @@ function MainDrawer() {
         component={Choferes}
         options={{
           title: 'Admin. Choferes',
-          drawerItemStyle: { display: 'none' } // Oculta del menú lateral
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
+      <Drawer.Screen
+        name="Sucursales"
+        component={Sucursales}
+        options={{
+          title: 'Admin. Sucursales',
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
+      <Drawer.Screen
+        name="Farmaceuticas"
+        component={Farmaceuticas}
+        options={{
+          title: 'Admin. Farmacéuticas',
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
+      <Drawer.Screen
+        name="Plantas"
+        component={Plantas}
+        options={{
+          title: 'Admin. Plantas',
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
+      <Drawer.Screen
+        name="Laboratorios"
+        component={Laboratorios}
+        options={{
+          title: 'Admin. Laboratorios',
+          drawerItemStyle: { display: 'none' }
         }}
       />
       <Drawer.Screen
         name="Camiones"
         component={Camiones}
         options={{
-          title: 'Gestión de Camiones',
-          drawerIcon: ({ color }) => (
-            <View style={styles.drawerIconContainer}>
-              <Icon name="truck" size={20} color={color} />
-            </View>
-          ),
+          title: 'Admin. Camiones',
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
+      <Drawer.Screen
+        name="RegistroCarga"
+        component={RegistroCarga}
+        options={{
+          title: 'Registro de Carga',
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
+      <Drawer.Screen
+        name="Marcas"
+        component={Marcas}
+        options={{
+          title: 'Admin. Marcas',
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
+      <Drawer.Screen
+        name="Modelos"
+        component={Modelos}
+        options={{
+          title: 'Admin. Modelos',
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
+      <Drawer.Screen
+        name="AsignacionConductores"
+        component={AsignacionConductores}
+        options={{
+          title: 'Admin. Asignación Conductores',
+          drawerItemStyle: { display: 'none' }
         }}
       />
       <Drawer.Screen
         name="Envios"
         component={Envios}
         options={{
-          title: 'Gestión de Envíos',
-          drawerIcon: ({ color }) => (
-            <View style={styles.drawerIconContainer}>
-              <Icon name="shipping-fast" size={20} color={color} />
-            </View>
-          ),
+          title: 'Admin. Envíos',
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
+      <Drawer.Screen
+        name="EnvioEstado"
+        component={EnvioEstado}
+        options={{
+          title: 'Admin. EnvioEstado',
+          drawerItemStyle: { display: 'none' }
         }}
       />
       <Drawer.Screen
         name="Incidentes"
         component={Incidentes}
         options={{
-          title: 'Gestión de Incidentes',
-          drawerIcon: ({ color }) => (
-            <View style={styles.drawerIconContainer}>
-              <Icon name="exclamation-triangle" size={20} color={color} />
-            </View>
-          ),
+          title: 'Admin. Incidentes',
+          drawerItemStyle: { display: 'none' }
         }}
       />
       <Drawer.Screen
         name="Rutas"
         component={Rutas}
         options={{
-          title: 'Gestión de Rutas',
-          drawerIcon: ({ color }) => (
-            <View style={styles.drawerIconContainer}>
-              <Icon name="route" size={20} color={color} />
-            </View>
-          ),
+          title: 'Admin. Rutas',
+          drawerItemStyle: { display: 'none' }
         }}
       />
       <Drawer.Screen
-        name="Configuración"
-        component={SettingsScreen}
+        name="Paquetes"
+        component={Paquetes}
         options={{
-          title: 'Configuración',
-          drawerIcon: ({ color }) => (
-            <View style={styles.drawerIconContainer}>
-              <Icon name="cog" size={20} color={color} />
-            </View>
-          ),
+          title: 'Admin. Paquetes',
+          drawerItemStyle: { display: 'none' }
         }}
       />
     </Drawer.Navigator>
   );
 }
-
-
 
 export default MainDrawer;
 
@@ -546,5 +840,22 @@ const styles = StyleSheet.create({
     color: '#003B75',
     textAlign: 'center',
   },
-
+  logoutButtonBlue: {
+    marginTop: 'auto',
+    marginBottom: 20,
+    marginHorizontal: 20,
+    paddingVertical: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  logoutButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoutButtonTextBlue: {
+    marginLeft: 15,
+    fontSize: 16,
+    color: '#003B75',
+    fontWeight: 'bold',
+  },
 });
