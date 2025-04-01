@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { getEnvios, crearEnvio, actualizarEnvio, eliminarEnvio, getEstadosDisponibles } from '../api/EnviosApi';
+import { Picker } from '@react-native-picker/picker';
+import { getEnvios, crearEnvio, actualizarEnvio, eliminarEnvio } from '../api/EnviosApi';
+import { getEstadosEnvio, subscribeToEstadoChanges } from '../api/EnvioEstadoApi';
 import { getCamionesDisponibles } from '../api/CamionConductorApi';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
@@ -19,17 +21,50 @@ const Envios = () => {
     cod_ruta: ''
   });
 
+  // Estados base predefinidos
+  const estadosBase = [
+    { numero: 1, descripcion: 'Preparando carga' },
+    { numero: 2, descripcion: 'En tránsito' },
+    { numero: 3, descripcion: 'Entregado' },
+    { numero: 4, descripcion: 'Retrasado' },
+    { numero: 5, descripcion: 'Cancelado' }
+  ];
+
   useEffect(() => {
     cargarDatos();
+    
+    // Suscribirse a cambios en los estados de envío
+    const unsubscribe = subscribeToEstadoChanges(cargarDatos);
+    return () => unsubscribe();
   }, []);
 
   const cargarDatos = async () => {
     try {
-      const [enviosData, camionesData] = await Promise.all([
+      const [enviosData, camionesData, estadosEnvioData] = await Promise.all([
         getEnvios(),
-        getCamionesDisponibles()
+        getCamionesDisponibles(),
+        getEstadosEnvio()
       ]);
-      setEnvios(enviosData);
+
+      // Combinar los datos
+      const enviosConEstados = enviosData.map(envio => {
+        const estadosEnvio = estadosEnvioData
+          .filter(ee => ee.num_envio == envio.numero)
+          .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+        
+        const ultimoEstado = estadosEnvio[0];
+        const estadoDescripcion = ultimoEstado 
+          ? estadosBase.find(e => e.numero == ultimoEstado.num_estado)?.descripcion 
+          : 'Sin estado';
+
+        return {
+          ...envio,
+          estado: estadoDescripcion,
+          cod_estado: ultimoEstado?.num_estado
+        };
+      });
+
+      setEnvios(enviosConEstados);
       setCamiones(camionesData);
     } catch (error) {
       Alert.alert('Error', 'No se pudieron cargar los datos');
@@ -54,16 +89,6 @@ const Envios = () => {
       resetearFormulario();
     } catch (error) {
       Alert.alert('Error', error.message || 'Ocurrió un error al guardar');
-    }
-  };
-
-  const cancelarEnvio = async (num_envio) => {
-    try {
-      await cambiarEstadoEnvio(num_envio, { numero: 5, descripcion: 'Cancelado' });
-      Alert.alert('Éxito', 'Envío cancelado');
-      await cargarDatos();
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo cancelar el envío');
     }
   };
 
@@ -155,7 +180,7 @@ const Envios = () => {
             {editandoId ? 'Editar Envío' : 'Nuevo Envío'}
           </Text>
 
-          { !editandoId ? (
+          {!editandoId ? (
             <>
               <TextInput
                 style={styles.input}
@@ -312,7 +337,6 @@ const Envios = () => {
   );
 };
 
-// Estilos (se mantienen igual)
 const styles = StyleSheet.create({
   contenedor: {
     flexGrow: 1,
@@ -436,7 +460,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-  cuerpoTarjeta: {
+  cuerpotarjeta: {
     marginBottom: 10,
   },
   filaInfo: {

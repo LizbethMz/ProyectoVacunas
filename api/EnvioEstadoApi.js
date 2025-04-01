@@ -1,9 +1,25 @@
 const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/envio_estado.php";
+let listeners = [];
 
-// Obtener todos los estados de envío (GET)
-export const getEstadosEnvio = async () => {
+const notifyListeners = () => {
+  listeners.forEach(listener => listener());
+};
+
+export const subscribeToEstadoChanges = (callback) => {
+  listeners.push(callback);
+  return () => {
+    listeners = listeners.filter(l => l !== callback);
+  };
+};
+
+export const getEstadosEnvio = async (num_envio = null) => {
   try {
-    const response = await fetch(API_URL, {
+    let url = API_URL;
+    if (num_envio) {
+      url += `?num_envio=${num_envio}`;
+    }
+
+    const response = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -14,15 +30,13 @@ export const getEstadosEnvio = async () => {
       throw new Error(`Error HTTP! estado: ${response.status}`);
     }
 
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
     console.error("Error obteniendo estados de envío:", error);
     throw error;
   }
 };
 
-// Crear un nuevo estado de envío (POST)
 export const createEstadoEnvio = async (estadoEnvio) => {
   try {
     const response = await fetch(API_URL, {
@@ -38,6 +52,7 @@ export const createEstadoEnvio = async (estadoEnvio) => {
     }
 
     const data = await response.json();
+    notifyListeners();
     return data;
   } catch (error) {
     console.error("Error creando estado de envío:", error);
@@ -45,7 +60,6 @@ export const createEstadoEnvio = async (estadoEnvio) => {
   }
 };
 
-// Actualizar un estado de envío (PUT)
 export const updateEstadoEnvio = async (id, estadoEnvio) => {
   try {
     const response = await fetch(API_URL, {
@@ -57,11 +71,11 @@ export const updateEstadoEnvio = async (id, estadoEnvio) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.text();
-      throw new Error(`Error al actualizar: ${errorData}`);
+      throw new Error(`Error HTTP! estado: ${response.status}`);
     }
 
     const data = await response.json();
+    notifyListeners();
     return data;
   } catch (error) {
     console.error("Error actualizando estado de envío:", error);
@@ -69,7 +83,6 @@ export const updateEstadoEnvio = async (id, estadoEnvio) => {
   }
 };
 
-// Eliminar un estado de envío (DELETE)
 export const deleteEstadoEnvio = async (id) => {
   try {
     const response = await fetch(API_URL, {
@@ -85,6 +98,7 @@ export const deleteEstadoEnvio = async (id) => {
     }
 
     const data = await response.json();
+    notifyListeners();
     return data;
   } catch (error) {
     console.error("Error eliminando estado de envío:", error);
