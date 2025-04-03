@@ -1,8 +1,8 @@
-//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/envios.php";
-//const ESTADOS_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/estados.php";
+const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/envios.php";
+const ESTADOS_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/estados.php";
 
-const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/envios.php";
-const ESTADOS_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/estados.php";
+//const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/envios.php";
+//const ESTADOS_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/estados.php";
 
 // Obtener todos los envíos con su último estado
 export const getEnvios = async () => {
@@ -111,6 +111,17 @@ export const eliminarEnvio = async (numero) => {
     return await response.json();
   } catch (error) {
     console.error("Error eliminando envío:", error);
+    throw error;
+  }
+};
+
+// Obtener envíos asignados a un conductor específico
+export const getEnviosPorConductor = async (conductorId) => {
+  try {
+    const response = await fetch(`${API_URL}?conductor=${conductorId}`);
+    return await response.json();
+  } catch (error) {
+    console.error("Error obteniendo envíos del conductor:", error);
     throw error;
   }
 };

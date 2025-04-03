@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ProyectoApp",
-    "slug": "ProyectoApp",
+    "slug": "proyectoapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -23,6 +23,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "cd0edc38-389c-4cd8-a7dc-b21d9020c611"
+      }
+    },
+    "owner": "mariana14"
   }
 }

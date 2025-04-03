@@ -1,5 +1,5 @@
-//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/registro_carga.php";
-const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/registro_carga.php";
+const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/registro_carga.php";
+//const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/registro_carga.php";
 
 
 // Obtener todos los registros de carga (GET)

@@ -4,145 +4,80 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator, DrawerItemList } from '@react-navigation/drawer';
-import Temperatura from './Consultas/Temperatura';
-import Camiones from './Consultas/Camiones';
-import Envios from './Consultas/Envios';
-import Incidentes from './Consultas/Incidentes';
-import Rutas from './Consultas/Rutas';
+import EnviosAsignados from './ConsultasUsuarios/EnviosAsignados';
+import MiCamion from './ConsultasUsuarios/MiCamion';
+import ReportarIncidente from './ConsultasUsuarios/ReportarIncidente';
+import MiRuta from './ConsultasUsuarios/MiRuta';
+import CambiarEstado from './ConsultasUsuarios/CambiarEstado';
 
-const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
-// Pantalla de Inicio con header personalizado
-function HomeScreen({ navigation }) {
+function HomeScreenUsuario({ navigation }) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Dashboard General</Text>
+      <Text style={styles.title}>Bienvenido Conductor</Text>
+      
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('EnviosAsignados')}
+      >
+        <Icon name="shipping-fast" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Mis Envíos</Text>
+        <Text style={styles.menuCardText}>Ver envíos asignados</Text>
+      </TouchableOpacity>
 
-      {/* Estado General */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Estado General</Text>
-        <View style={styles.infoRow}>
-          <View style={styles.infoCard}>
-            <Icon name="truck" size={30} color="#003B75" style={styles.icon} />
-            <Text style={styles.infoText}>Camiones Activos</Text>
-            <Text style={styles.highlight}>12</Text>
-          </View>
-          <View style={styles.infoCard}>
-            <Icon name="box" size={30} color="#003B75" style={styles.icon} />
-            <Text style={styles.infoText}>Envíos en Curso</Text>
-            <Text style={styles.highlight}>8</Text>
-          </View>
-          <View style={styles.infoCard}>
-            <Icon name="exclamation-circle" size={30} color="#003B75" style={styles.icon} />
-            <Text style={styles.infoText}>Incidentes</Text>
-            <Text style={styles.highlight}>2</Text>
-          </View>
-        </View>
-      </View>
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('MiCamion')}
+      >
+        <Icon name="truck" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Mi Camión</Text>
+        <Text style={styles.menuCardText}>Información del vehículo asignado</Text>
+      </TouchableOpacity>
 
-      {/* Temperatura en Tiempo Real */}
-      <View style={styles.tempContainer}>
-        <Text style={styles.sectionTitle}>Temperaturas Activas</Text>
-        <View style={styles.tempCard}>
-          <View style={styles.tempLeft}>
-            <Text style={styles.tempText}>2°C</Text>
-          </View>
-          <View style={styles.tempRight}>
-            <Text style={styles.tempTitle}>Camión 101</Text>
-            <Text style={styles.statusOK}>Estable</Text>
-          </View>
-        </View>
-
-        <View style={styles.tempCard}>
-          <View style={styles.tempLeft}>
-            <Text style={styles.tempText}>8°C</Text>
-          </View>
-          <View style={styles.tempRight}>
-            <Text style={styles.tempTitle}>Camión 102</Text>
-            <Text style={styles.statusWarning}>¡Atención!</Text>
-          </View>
-        </View>
-
-        <View style={styles.tempCard}>
-          <View style={styles.tempLeft}>
-            <Text style={styles.tempText}>4°C</Text>
-          </View>
-          <View style={styles.tempRight}>
-            <Text style={styles.tempTitle}>Camión 103</Text>
-            <Text style={styles.statusOK}>Estable</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Próximos Envíos */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Próximos Envíos</Text>
-        <View style={styles.envioCard}>
-          <View style={styles.envioLeft}>
-            <Icon name="shipping-fast" style={styles.iconShipping} />
-          </View>
-          <View style={styles.envioCenter}>
-            <Text style={styles.envioText}>
-              Planta MedicPro <Icon name="angle-right" style={styles.iconShipping} /> Clinica 130
-            </Text>
-          </View>
-          <View style={styles.envioRight} />
-        </View>
-        <View style={styles.envioCard}>
-          <View style={styles.envioLeft}>
-            <Icon name="shipping-fast" style={styles.iconShipping} />
-          </View>
-          <View style={styles.envioCenter}>
-            <Text style={styles.envioText}>
-              Farmaceutica Luna <Icon name="angle-right" style={styles.iconShipping} /> Clinica General 23
-            </Text>
-          </View>
-          <View style={styles.envioRight} />
-        </View>
-      </View>
+      <TouchableOpacity
+        style={styles.menuCard}
+        onPress={() => navigation.navigate('MiRuta')}
+      >
+        <Icon name="route" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Mi Ruta</Text>
+        <Text style={styles.menuCardText}>Ver detalles de la ruta asignada</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
 
-// Pantalla de Configuración simplificada
-function SettingsScreen() {
-  return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <Text style={styles.title}>Configuración</Text>
-      <View style={styles.bottomButtons}>
-        <TouchableOpacity style={styles.settingBox}>
-          <Icon name="user-cog" size={24} color="#005398" style={styles.settingIcon} />
-          <Text style={styles.settingText}>Configurar Perfil</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.settingBox}>
-          <Icon name="sign-out-alt" size={24} color="#005398" style={styles.settingIcon} />
-          <Text style={styles.settingText}>Cerrar Sesión</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
-  );
-}
-
-// Componente personalizado para el Drawer con padding en iconos
 function CustomDrawerContent(props) {
   return (
     <View style={styles.drawerContainer}>
       <View style={styles.drawerHeader}>
-        <Text style={styles.drawerTitle}>TransportApp</Text>
+        <Text style={styles.drawerTitle}>TransportApp Conductor</Text>
       </View>
       <DrawerItemList
         {...props}
         itemStyle={styles.drawerItem}
         iconContainerStyle={styles.drawerIconContainer}
       />
+      <TouchableOpacity
+        style={styles.logoutButtonBlue}
+        onPress={() => {
+          props.navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }]
+          });
+        }}
+      >
+        <View style={styles.logoutButtonContent}>
+          <Icon name="sign-out-alt" size={20} color="#003B75" />
+          <Text style={styles.logoutButtonTextBlue}>Cerrar sesión</Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 }
 
-// Drawer Navigator para el menú lateral
-function MainDrawer() {
+function MainDrawerUsuario() {
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
@@ -165,8 +100,8 @@ function MainDrawer() {
       })}
     >
       <Drawer.Screen
-        name="Home"
-        component={HomeScreen}
+        name="HomeUsuario"
+        component={HomeScreenUsuario}
         options={{
           title: 'Inicio',
           drawerIcon: ({ color }) => (
@@ -177,46 +112,10 @@ function MainDrawer() {
         }}
       />
       <Drawer.Screen
-        name="Temperatura"
-        component={Temperatura}
+        name="EnviosAsignados"
+        component={EnviosAsignados}
         options={{
-          title: 'Consulta de Temperatura',
-          drawerIcon: ({ color }) => (
-            <View style={styles.drawerIconContainer}>
-              <Icon name="thermometer-half" size={20} color={color} />
-            </View>
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Choferes"
-        component={Choferes}
-        options={{
-          title: 'Consulta de Choferes',
-          drawerIcon: ({ color }) => (
-            <View style={styles.drawerIconContainer}>
-              <Icon name="user-tie" size={20} color={color} />
-            </View>
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Camiones"
-        component={Camiones}
-        options={{
-          title: 'Consulta de Camiones',
-          drawerIcon: ({ color }) => (
-            <View style={styles.drawerIconContainer}>
-              <Icon name="truck" size={20} color={color} />
-            </View>
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="Envios"
-        component={Envios}
-        options={{
-          title: 'Gestión de Envíos',
+          title: 'Mis Envíos',
           drawerIcon: ({ color }) => (
             <View style={styles.drawerIconContainer}>
               <Icon name="shipping-fast" size={20} color={color} />
@@ -225,10 +124,22 @@ function MainDrawer() {
         }}
       />
       <Drawer.Screen
-        name="Incidentes"
-        component={Incidentes}
+        name="MiCamion"
+        component={MiCamion}
         options={{
-          title: 'Gestión de Incidentes',
+          title: 'Mi Camión',
+          drawerIcon: ({ color }) => (
+            <View style={styles.drawerIconContainer}>
+              <Icon name="truck" size={20} color={color} />
+            </View>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="ReportarIncidente"
+        component={ReportarIncidente}
+        options={{
+          title: 'Reportar Incidente',
           drawerIcon: ({ color }) => (
             <View style={styles.drawerIconContainer}>
               <Icon name="exclamation-triangle" size={20} color={color} />
@@ -237,10 +148,10 @@ function MainDrawer() {
         }}
       />
       <Drawer.Screen
-        name="Rutas"
-        component={Rutas}
+        name="MiRuta"
+        component={MiRuta}
         options={{
-          title: 'Gestión de Rutas',
+          title: 'Mi Ruta',
           drawerIcon: ({ color }) => (
             <View style={styles.drawerIconContainer}>
               <Icon name="route" size={20} color={color} />
@@ -249,13 +160,13 @@ function MainDrawer() {
         }}
       />
       <Drawer.Screen
-        name="Configuración"
-        component={SettingsScreen}
+        name="CambiarEstado"
+        component={CambiarEstado}
         options={{
-          title: 'Configuración',
+          title: 'Cambiar Estado',
           drawerIcon: ({ color }) => (
             <View style={styles.drawerIconContainer}>
-              <Icon name="cog" size={20} color={color} />
+              <Icon name="exchange-alt" size={20} color={color} />
             </View>
           ),
         }}
@@ -264,8 +175,7 @@ function MainDrawer() {
   );
 }
 
-// Exporta directamente el navegador principal sin envolverlo en NavigationContainer
-export default MainDrawer;
+export default MainDrawerUsuario;
 
 const styles = StyleSheet.create({
   container: {
@@ -275,171 +185,34 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#005398',
-    marginBottom: 20,
+    marginBottom: 30,
   },
-  section: {
-    marginBottom: 20,
+  menuCard: {
+    backgroundColor: 'rgb(230, 242, 255)',
     width: '100%',
+    borderRadius: 10,
+    padding: 25,
+    marginBottom: 20,
     alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  sectionTitle: {
+  menuCardTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#003B75',
-    marginBottom: 10,
-  },
-  tempContainer: {
-    width: '100%',
-  },
-  tempCard: {
-    flexDirection: 'row',
-    backgroundColor: 'rgb(249, 249, 255)',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 15,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    alignItems: 'center',
-  },
-  tempLeft: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tempText: {
-    fontSize: 40,
-    fontWeight: 'bold',
     color: '#005398',
+    marginVertical: 10,
   },
-  tempRight: {
-    flex: 2,
-    paddingLeft: 10,
-  },
-  tempTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#003B75',
-    marginBottom: 5,
-  },
-  statusOK: {
-    fontSize: 14,
-    color: '#228B22',
-    fontWeight: 'bold',
-  },
-  statusWarning: {
-    fontSize: 14,
-    color: '#FF4500',
-    fontWeight: 'bold',
-  },
-  envioCard: {
-    flexDirection: 'row',
-    backgroundColor: 'rgb(210, 222, 231)',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 15,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    alignItems: 'center',
-    height: 80,
-  },
-  envioLeft: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  envioCenter: {
-    flex: 2,
-    paddingLeft: 10,
-  },
-  envioRight: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconShipping: {
-    color: '#005398',
-    fontSize: 30,
-  },
-  envioText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#003B75',
-  },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-  },
-  infoCard: {
-    backgroundColor: '#DBEDFC',
-    width: '30%',
-    alignItems: 'center',
-    padding: 20,
-    borderRadius: 10,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  icon: {
-    marginBottom: 10,
-  },
-  infoText: {
+  menuCardText: {
     fontSize: 14,
     color: '#003B75',
     textAlign: 'center',
-    marginBottom: 5,
-  },
-  highlight: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    color: '#005398',
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    justifyContent: 'flex-start',
-    padding: 20,
-  },
-  bottomButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '80%',
-    marginTop: 20,
-  },
-  settingBox: {
-    backgroundColor: 'rgb(199, 223, 243)',
-    width: '45%',
-    padding: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  settingText: {
-    fontSize: 18,
-    textAlign: 'center',
-    color: '#005398',
-    fontWeight: 'bold',
-    marginTop: 10,
-  },
-  settingIcon: {
-    marginBottom: 5,
   },
   drawerContainer: {
     flex: 1,
@@ -464,5 +237,23 @@ const styles = StyleSheet.create({
   headerMenuButton: {
     marginLeft: 15,
     padding: 10,
+  },
+  logoutButtonBlue: {
+    marginTop: 'auto',
+    marginBottom: 20,
+    marginHorizontal: 20,
+    paddingVertical: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  logoutButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoutButtonTextBlue: {
+    marginLeft: 15,
+    fontSize: 16,
+    color: '#003B75',
+    fontWeight: 'bold',
   },
 });

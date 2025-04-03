@@ -1,5 +1,5 @@
-//const API_BASE_URL = "http://192.168.100.8/ProyectoApp/backend/consultas";
-const API_BASE_URL = "http://172.18.3.5/ProyectoApp/backend/consultas";
+const API_BASE_URL = "http://192.168.100.8/ProyectoApp/backend/consultas";
+//const API_BASE_URL = "http://172.18.3.5/ProyectoApp/backend/consultas";
 const ASIGNACIONES_URL = `${API_BASE_URL}/camion_conductor.php`;
 const CONDUCTORES_URL = `${API_BASE_URL}/conductores.php`;
 const CAMIONES_URL = `${API_BASE_URL}/camiones.php`;

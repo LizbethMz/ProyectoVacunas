@@ -1,5 +1,5 @@
-//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/usuarios.php";
-const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/usuarios.php";
+const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/usuarios.php";
+//const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/usuarios.php";
 
 
 // Obtener todos los usuarios (GET)
