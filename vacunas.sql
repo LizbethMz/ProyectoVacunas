@@ -1,4 +1,4 @@
--- Active: 1732292347716@@127.0.0.1@3306@vacunas
+-- Active: 1732292347716@@127.0.0.1@3306
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
@@ -26,7 +26,8 @@ SET time_zone = "+00:00";
 
 --
 -- Estructura de tabla para la tabla `camion`
---
+CREATE DATABASE IF NOT EXISTS vacunas;
+USE vacunas;
 
 CREATE TABLE `camion` (
   `codigo` int(11) NOT NULL,
@@ -721,3 +722,12 @@ INSERT INTO `registro_carga` (`carga_util`, `cod_camion`, `num_envio`) VALUES
 (11000.25, 3, 3),
 (18000.00, 4, 4),
 (13000.30, 5, 5);
+
+INSERT INTO `registro_carga` (`carga_util`, `cod_camion`, `num_envio`, `fecha_registro`) VALUES
+(3500.00, 201, 1, '2025-03-10 08:15:00'),
+(2800.50, 202, 2, '2025-03-11 07:30:00'),
+(3200.75, 203, 3, '2025-03-12 09:45:00'),
+(4000.00, 204, 4, '2025-03-13 10:20:00'),
+(3600.25, 205, 5, '2025-03-14 08:50:00');
+
+SELECT numero FROM envio;

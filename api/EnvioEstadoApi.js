@@ -1,4 +1,7 @@
-const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/envio_estado.php";
+//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/envio_estado.php";
+const API_URL = "http://172.18.3.83/ProyectoApp/backend/consultas/envio_estado.php";
+
+
 let listeners = [];
 
 const notifyListeners = () => {

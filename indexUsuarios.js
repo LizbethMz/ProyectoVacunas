@@ -6,21 +6,21 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator, DrawerItemList } from '@react-navigation/drawer';
 import EnviosAsignados from './ConsultasUsuarios/EnviosAsignados';
 import MiCamion from './ConsultasUsuarios/MiCamion';
-import ReportarIncidente from './ConsultasUsuarios/ReportarIncidente';
 import MiRuta from './ConsultasUsuarios/MiRuta';
 import CambiarEstado from './ConsultasUsuarios/CambiarEstado';
+import MisIncidentes from './ConsultasUsuarios/MisIncidentes';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
-function HomeScreenUsuario({ navigation }) {
+function HomeScreenUsuario({ navigation, route }) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Bienvenido Conductor</Text>
       
       <TouchableOpacity
         style={styles.menuCard}
-        onPress={() => navigation.navigate('EnviosAsignados')}
+        onPress={() => navigation.navigate('EnviosAsignados', { conductorId: route.params?.conductorInfo?.num_conductor })}
       >
         <Icon name="shipping-fast" size={40} color="#005398" />
         <Text style={styles.menuCardTitle}>Mis Envíos</Text>
@@ -29,7 +29,7 @@ function HomeScreenUsuario({ navigation }) {
 
       <TouchableOpacity
         style={styles.menuCard}
-        onPress={() => navigation.navigate('MiCamion')}
+        onPress={() => navigation.navigate('MiCamion', { conductorId: route.params?.conductorInfo?.num_conductor })}
       >
         <Icon name="truck" size={40} color="#005398" />
         <Text style={styles.menuCardTitle}>Mi Camión</Text>
@@ -38,11 +38,11 @@ function HomeScreenUsuario({ navigation }) {
 
       <TouchableOpacity
         style={styles.menuCard}
-        onPress={() => navigation.navigate('MiRuta')}
+        onPress={() => navigation.navigate('MisIncidentes', { conductorId: route.params?.conductorInfo?.num_conductor })}
       >
-        <Icon name="route" size={40} color="#005398" />
-        <Text style={styles.menuCardTitle}>Mi Ruta</Text>
-        <Text style={styles.menuCardText}>Ver detalles de la ruta asignada</Text>
+        <Icon name="clipboard-list" size={40} color="#005398" />
+        <Text style={styles.menuCardTitle}>Mis Incidentes</Text>
+        <Text style={styles.menuCardText}>Ver y gestionar mis incidentes</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -77,11 +77,11 @@ function CustomDrawerContent(props) {
   );
 }
 
-function MainDrawerUsuario() {
+function MainDrawerUsuario({ route }) {
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={({ navigation }) => ({
+      screenOptions={({ navigation, route }) => ({
         drawerStyle: { backgroundColor: 'rgb(230, 243, 254)' },
         drawerActiveTintColor: '#005398',
         drawerInactiveTintColor: '#003B75',
@@ -102,6 +102,7 @@ function MainDrawerUsuario() {
       <Drawer.Screen
         name="HomeUsuario"
         component={HomeScreenUsuario}
+        initialParams={{ conductorInfo: route?.params?.conductorInfo }}
         options={{
           title: 'Inicio',
           drawerIcon: ({ color }) => (
@@ -114,6 +115,7 @@ function MainDrawerUsuario() {
       <Drawer.Screen
         name="EnviosAsignados"
         component={EnviosAsignados}
+        initialParams={{ conductorId: route?.params?.conductorInfo?.num_conductor }}
         options={{
           title: 'Mis Envíos',
           drawerIcon: ({ color }) => (
@@ -126,6 +128,7 @@ function MainDrawerUsuario() {
       <Drawer.Screen
         name="MiCamion"
         component={MiCamion}
+        initialParams={{ conductorId: route?.params?.conductorInfo?.num_conductor }}
         options={{
           title: 'Mi Camión',
           drawerIcon: ({ color }) => (
@@ -136,13 +139,14 @@ function MainDrawerUsuario() {
         }}
       />
       <Drawer.Screen
-        name="ReportarIncidente"
-        component={ReportarIncidente}
+        name="MisIncidentes"
+        component={MisIncidentes}
+        initialParams={{ conductorId: route?.params?.conductorInfo?.num_conductor }}
         options={{
-          title: 'Reportar Incidente',
+          title: 'Mis Incidentes',
           drawerIcon: ({ color }) => (
             <View style={styles.drawerIconContainer}>
-              <Icon name="exclamation-triangle" size={20} color={color} />
+              <Icon name="clipboard-list" size={20} color={color} />
             </View>
           ),
         }}
@@ -152,16 +156,13 @@ function MainDrawerUsuario() {
         component={MiRuta}
         options={{
           title: 'Mi Ruta',
-          drawerIcon: ({ color }) => (
-            <View style={styles.drawerIconContainer}>
-              <Icon name="route" size={20} color={color} />
-            </View>
-          ),
+          drawerItemStyle: { display: 'none' }
         }}
       />
       <Drawer.Screen
         name="CambiarEstado"
         component={CambiarEstado}
+        initialParams={{ conductorId: route?.params?.conductorInfo?.num_conductor }}
         options={{
           title: 'Cambiar Estado',
           drawerIcon: ({ color }) => (

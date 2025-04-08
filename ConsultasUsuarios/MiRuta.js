@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { getRutaAsignada } from '../apiUsuarios/RutasApi';
 
-const MiRuta = ({ route }) => {
+const MiRuta = ({ route, navigation }) => {
   const [ruta, setRuta] = useState(null);
   const { envioId } = route.params;
 
@@ -29,7 +29,15 @@ const MiRuta = ({ route }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Mi Ruta Asignada</Text>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.navigate('EnviosAsignados')}
+        >
+          <Icon name="arrow-left" size={24} color="#005398" />
+        </TouchableOpacity>
+        <Text style={styles.title}>Mi Ruta Asignada</Text>
+      </View>
       
       <View style={styles.routeCard}>
         <View style={styles.routeStep}>
@@ -37,12 +45,14 @@ const MiRuta = ({ route }) => {
           <View style={styles.routeDetails}>
             <Text style={styles.routeTitle}>Origen</Text>
             <Text style={styles.routeText}>{ruta.origen}</Text>
+            <Text style={styles.routeAddress}>
+              {ruta.calle_origen} {ruta.numero_origen}, {ruta.colonia_origen}
+            </Text>
+            <Text style={styles.routeAddress}>
+              {ruta.cp_origen}, {ruta.pais_origen}
+            </Text>
             <Text style={styles.routeTime}>Salida: {ruta.f_salida} a las {ruta.h_salida}</Text>
           </View>
-        </View>
-
-        <View style={styles.routeArrow}>
-          <Icon name="long-arrow-alt-down" size={24} color="#005398" />
         </View>
 
         <View style={styles.routeStep}>
@@ -50,15 +60,20 @@ const MiRuta = ({ route }) => {
           <View style={styles.routeDetails}>
             <Text style={styles.routeTitle}>Destino</Text>
             <Text style={styles.routeText}>{ruta.destino}</Text>
+            <Text style={styles.routeAddress}>
+              {ruta.calle_destino} {ruta.numero_destino}, {ruta.colonia_destino}
+            </Text>
+            <Text style={styles.routeAddress}>
+              {ruta.cp_destino}, {ruta.pais_destino}
+            </Text>
             <Text style={styles.routeTime}>Llegada estimada: {ruta.f_llegada} a las {ruta.h_llegada}</Text>
           </View>
         </View>
       </View>
 
       <View style={styles.distanceCard}>
-        <Text style={styles.distanceTitle}>Distancia estimada</Text>
-        <Text style={styles.distanceValue}>{ruta.distancia} km</Text>
-        <Text style={styles.distanceTime}>Tiempo estimado: {ruta.tiempo_estimado}</Text>
+        <Text style={styles.distanceTitle}>Tiempo estimado</Text>
+        <Text style={styles.distanceValue}>{ruta.tiempo_estimado} horas</Text>
       </View>
     </ScrollView>
   );
@@ -70,11 +85,19 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#ffffff',
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  backButton: {
+    marginRight: 15,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#005398',
-    marginBottom: 20,
+    flex: 1,
     textAlign: 'center',
   },
   routeCard: {
@@ -86,8 +109,8 @@ const styles = StyleSheet.create({
   },
   routeStep: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
+    alignItems: 'flex-start',
+    marginBottom: 20,
   },
   routeDetails: {
     marginLeft: 15,
@@ -104,14 +127,16 @@ const styles = StyleSheet.create({
     color: '#34495E',
     marginBottom: 5,
   },
+  routeAddress: {
+    fontSize: 12,
+    color: '#7F8C8D',
+    marginBottom: 2,
+  },
   routeTime: {
     fontSize: 12,
     color: '#7F8C8D',
     fontStyle: 'italic',
-  },
-  routeArrow: {
-    alignItems: 'center',
-    marginVertical: 5,
+    marginTop: 5,
   },
   distanceCard: {
     backgroundColor: '#DBEDFC',
@@ -131,10 +156,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#005398',
     marginBottom: 5,
-  },
-  distanceTime: {
-    fontSize: 14,
-    color: '#7F8C8D',
   },
 });
 

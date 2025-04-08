@@ -1,5 +1,5 @@
-const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/auth.php";
-//const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/auth.php";
+const API_URL = "http://172.18.3.83/ProyectoApp/backend/consultas/auth.php";
+//const API_URL = "http://172.18.3.83/ProyectoApp/backend/consultas/auth.php";
 
 // Función para manejar errores de forma consistente
 const handleApiError = (error, context) => {

@@ -1,8 +1,8 @@
-const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/modelos.php";
-const MARCAS_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/marcas.php";
+//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/modelos.php";
+//const MARCAS_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/marcas.php";
 
-//const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/modelos.php";
-//const MARCAS_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/marcas.php";
+const API_URL = "http://172.18.3.83/ProyectoApp/backend/consultas/modelos.php";
+const MARCAS_URL = "http://172.18.3.83/ProyectoApp/backend/consultas/marcas.php";
 
 // Obtener todos los modelos (GET)
 export const getModelos = async () => {

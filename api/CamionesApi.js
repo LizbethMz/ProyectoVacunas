@@ -1,5 +1,5 @@
-const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/camiones.php";
-//const API_URL = "http://172.18.3.5/ProyectoApp/backend/consultas/camiones.php";
+//const API_URL = "http://192.168.100.8/ProyectoApp/backend/consultas/camiones.php";
+const API_URL = "http://172.18.3.83/ProyectoApp/backend/consultas/camiones.php";
 
 // Obtener todos los camiones (GET)
 export const getCamiones = async () => {

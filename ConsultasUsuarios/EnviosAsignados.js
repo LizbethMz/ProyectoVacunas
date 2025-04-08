@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'rea
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { getEnviosPorConductor } from '../api/EnviosApi';
 
-const EnviosAsignados = ({ route }) => {
+const EnviosAsignados = ({ route, navigation }) => {
   const [envios, setEnvios] = useState([]);
   const { conductorId } = route.params;
 
@@ -14,8 +14,11 @@ const EnviosAsignados = ({ route }) => {
   const cargarEnvios = async () => {
     try {
       const enviosData = await getEnviosPorConductor(conductorId);
-      setEnvios(enviosData);
+      console.log('Datos de envíos recibidos:', enviosData);
+      setEnvios(Array.isArray(enviosData) ? enviosData : []);
     } catch (error) {
+      console.error('Error al cargar envíos:', error);
+      setEnvios([]);
       Alert.alert('Error', 'No se pudieron cargar los envíos asignados');
     }
   };
@@ -32,59 +35,93 @@ const EnviosAsignados = ({ route }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Mis Envíos Asignados</Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Icon name="arrow-left" size={24} color="#003B75" />
+        </TouchableOpacity>
+        <Text style={styles.title}>Mis Envíos Asignados</Text>
+      </View>
       
-      {envios.length === 0 ? (
-        <Text style={styles.noEnvio}>No tienes envíos asignados actualmente</Text>
-      ) : (
-        envios.map((envio) => (
-          <View key={envio.numero} style={styles.envioCard}>
-            <View style={styles.header}>
-              <Icon name="truck" size={24} color="#003B75" />
-              <Text style={styles.envioTitle}>Envío #{envio.numero}</Text>
-              <View style={[styles.statusBadge, { backgroundColor: obtenerColorEstado(envio.estado) }]}>
-                <Text style={styles.statusText}>{envio.estado}</Text>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {envios.length === 0 ? (
+          <Text style={styles.noEnvio}>No tienes envíos asignados actualmente</Text>
+        ) : (
+          envios.map((envio) => (
+            <View key={envio.numero} style={styles.envioCard}>
+              <View style={styles.cardHeader}>
+                <Icon name="truck" size={24} color="#003B75" />
+                <Text style={styles.envioTitle}>Envío #{envio.numero}</Text>
+                <View style={[styles.statusBadge, { backgroundColor: obtenerColorEstado(envio.estado) }]}>
+                  <Text style={styles.statusText}>{envio.estado || 'Pendiente'}</Text>
+                </View>
               </View>
+              
+              <View style={styles.details}>
+                <View style={styles.detailRow}>
+                  <Icon name="calendar-alt" size={16} color="#003B75" />
+                  <Text style={styles.detailText}>Fecha: {envio.fecha_progr}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Icon name="clock" size={16} color="#003B75" />
+                  <Text style={styles.detailText}>Salida: {envio.hora_salida}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Icon name="clock" size={16} color="#003B75" />
+                  <Text style={styles.detailText}>Llegada: {envio.hora_llegada}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Icon name="industry" size={16} color="#003B75" />
+                  <Text style={styles.detailText}>Origen: {envio.planta_nombre || 'No disponible'}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Icon name="map-marker-alt" size={16} color="#003B75" />
+                  <Text style={styles.detailText}>Destino: {envio.sucursal_nombre || 'No disponible'}</Text>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={styles.routeButton}
+                onPress={() => navigation.navigate('MiRuta', { envioId: envio.numero })}
+              >
+                <Icon name="route" size={16} color="#fff" />
+                <Text style={styles.routeButtonText}>Ver Ruta</Text>
+              </TouchableOpacity>
             </View>
-            
-            <View style={styles.details}>
-              <View style={styles.detailRow}>
-                <Icon name="calendar-alt" size={16} color="#003B75" />
-                <Text style={styles.detailText}>Fecha: {envio.fecha_progr}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Icon name="clock" size={16} color="#003B75" />
-                <Text style={styles.detailText}>Salida: {envio.hora_salida}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Icon name="clock" size={16} color="#003B75" />
-                <Text style={styles.detailText}>Llegada: {envio.hora_llegada}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Icon name="map-marker-alt" size={16} color="#003B75" />
-                <Text style={styles.detailText}>Destino: {envio.destino}</Text>
-              </View>
-            </View>
-          </View>
-        ))
-      )}
-    </ScrollView>
+          ))
+        )}
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    padding: 20,
+    flex: 1,
     backgroundColor: '#ffffff',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  backButton: {
+    marginRight: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#005398',
-    marginBottom: 20,
-    textAlign: 'center',
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 20,
   },
   noEnvio: {
     textAlign: 'center',
@@ -99,7 +136,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     elevation: 2,
   },
-  header: {
+  cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
@@ -136,6 +173,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#34495E',
     marginLeft: 10,
+  },
+  routeButton: {
+    backgroundColor: '#005398',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  routeButtonText: {
+    color: '#fff',
+    marginLeft: 8,
+    fontWeight: 'bold',
   },
 });
 

@@ -1,0 +1,21 @@
+{
+    "build": {
+      "ColdSafe": {
+        "android": {
+          "buildType": "apk"
+        }
+      },
+      "ColdSafe2": {
+        "android": {
+          "gradleCommand": ":app:assembleRelease"
+        }
+      },
+      "ColdSafe3": {
+        "developmentClient": true
+      },
+      "ColdSafe4": {
+        "distribution": "internal"
+      },
+      "production": {}
+    }
+  }

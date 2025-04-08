@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Picker } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { getUsuarios, createUsuario, updateUsuario, deleteUsuario } from '../api/UsuariosApi';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
